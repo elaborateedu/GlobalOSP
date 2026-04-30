@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog | GlobalOSP</title>
+  <meta name="description" content="GlobalOSP is the home for open-source projects, websites, experiments, and tools built under one clean brand." />
+  <link rel="icon" type="image/jpeg" href="favicon.jpeg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="GlobalOSP home">
+        <span class="brand-text">GlobalOSP</span>
+      </a>
+
+      <button class="menu-button" data-menu-button aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+
+      <nav class="nav-links" data-nav-links>
+        <a class="" href="index.html">Home</a>
+        <a class="" href="about.html">About</a>
+        <a class="" href="projects.html">Projects</a>
+        <a class="active" href="blog.html">Blog</a>
+        <a class="" href="careers.html">Careers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="eyebrow"><span class="dot"></span> Blog</div>
+        <h1>Articles, updates, and build notes.</h1>
+        <p class="lede">Use this section for founder notes, devlogs, tutorials, project updates, and announcements.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-top">
+          <h2>Latest articles</h2>
+          <p>The blog list is also in <strong>script.js</strong>. Later, you can turn each article into its own HTML page.</p>
+        </div>
+        <div class="blog-grid" data-blog-grid></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span data-year></span> GlobalOSP</span>
+      <span>Global Open Source Project</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
