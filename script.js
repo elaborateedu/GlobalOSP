@@ -1,119 +1,14 @@
-// GlobalOSP main JavaScript
 
-const menuButton = document.querySelector("[data-menu-button]");
-const navLinks = document.querySelector("[data-nav-links]");
-
-if (menuButton && navLinks) {
-  menuButton.addEventListener("click", () => {
-    navLinks.classList.toggle("open");
-    const isOpen = navLinks.classList.contains("open");
-    menuButton.setAttribute("aria-expanded", String(isOpen));
-  });
-}
-
-document.querySelectorAll("[data-year]").forEach((element) => {
-  element.textContent = new Date().getFullYear();
-});
-
-// Easy project system.
-// To add projects, edit this list. You can also add live links when ready.
-const projects = [
-  {
-    name: "Elaborate",
-    category: "Education Platform",
-    description:
-      "A clean education dashboard concept built to bring student, teacher, school, and district tools into one organized website.",
-    tags: ["Education", "Dashboard", "Web"],
-    link: "https://elaborateedu.github.io"
-  },
-  {
-    name: "Vatio Labs",
-    category: "Roblox / Discord Studio",
-    description:
-      "A no-BS Roblox studio and Discord community focused on building games, systems, moderation training, and useful server tools.",
-    tags: ["Roblox", "Discord", "Community"],
-    link: "https://www.roblox.com/communities/212485615/Vatio-Labs#!/about"
-  },
-  {
-    name: "Vanata Bot",
-    category: "Discord Bot",
-    description:
-      "A Discord bot and dashboard project with tickets, applications, server tools, and future dashboard-first customization.",
-    tags: ["Discord Bot", "Firebase", "Dashboard"],
-    link: "#"
-  },
-  {
-    name: "Locc",
-    category: "Focus Hardware / Website",
-    description:
-      "A website-first concept for a phone-locking focus product inspired by physical distraction blockers.",
-    tags: ["Hardware", "Focus", "Firebase"],
-    link: "#"
-  }
-
-];
-
-const blogPosts = [
-  {
-    title: "Why GlobalOSP Exists",
-    date: "Coming soon",
-    excerpt:
-      "A founder note about turning separate websites, tools, and experiments into one organized open-source project network.",
-    slug: "#"
-  },
-  {
-    title: "Building Projects Before They Feel Ready",
-    date: "Draft",
-    excerpt:
-      "Thoughts on shipping early, learning fast, and improving projects after they are already real.",
-    slug: "#"
-  },
-  {
-    title: "The Dashboard-First Internet",
-    date: "Draft",
-    excerpt:
-      "Why tools should feel less like commands and more like simple, beautiful control panels.",
-    slug: "#"
-  }
-];
-
-function renderProjects() {
-  const grid = document.querySelector("[data-project-grid]");
-  if (!grid) return;
-
-  grid.innerHTML = projects
-    .map((project) => {
-      const tags = project.tags.map((tag) => `<span class="tag">${tag}</span>`).join("");
-      return `
-        <article class="project-card">
-          <span class="tag">${project.category}</span>
-          <h3>${project.name}</h3>
-          <p>${project.description}</p>
-          <div class="project-meta">${tags}</div>
-          <a class="btn secondary" href="${project.link}" ${project.link !== "#" ? 'target="_blank" rel="noreferrer"' : ""}>View project</a>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function renderBlogPosts() {
-  const grid = document.querySelector("[data-blog-grid]");
-  if (!grid) return;
-
-  grid.innerHTML = blogPosts
-    .map((post) => {
-      return `
-        <article class="post-card">
-          <span class="tag">${post.date}</span>
-          <h3>${post.title}</h3>
-          <p>${post.excerpt}</p>
-          <a class="btn secondary" href="${post.slug}">Read article</a>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-renderProjects();
-renderBlogPosts();
+const menuButton=document.querySelector('[data-menu-button]'),navLinks=document.querySelector('[data-nav-links]');if(menuButton&&navLinks){menuButton.addEventListener('click',()=>navLinks.classList.toggle('open'))}
+document.querySelectorAll('[data-year]').forEach(e=>e.textContent=new Date().getFullYear());
+const projects=[{title:'Elaborate',type:'Website',owner:'qapps',service:'GitHub',description:'An education dashboard concept that connects school tools into one simple interface.',tags:['education','dashboard','web'],url:'https://elaborateedu.github.io'},{title:'Protocol: Infection',type:'Game',owner:'Vatio Labs',service:'Roblox Studio',description:'A progressive zombie apocalypse Roblox game concept with story missions and eerie environments.',tags:['roblox','game','story'],url:'#'},{title:'Vanata Bot',type:'Bot',owner:'qapps',service:'GitHub',description:'A Discord bot and dashboard project with tickets, applications, and server customization.',tags:['discord','bot','firebase'],url:'#'},{title:'Locc',type:'Hardware / Web',owner:'GlobalOSP',service:'Firebase',description:'A focus product concept that combines hardware and a web dashboard.',tags:['hardware','focus','web'],url:'#'}];
+const threads=[{title:'How should project pages handle external links?',category:'Platform ideas',author:'qapps',replies:12,excerpt:'Should GlobalOSP show embeds, screenshots, or simple link cards for services like GitHub and Roblox?'},{title:'Share your first website',category:'Showcase',author:'Community',replies:28,excerpt:'Drop the first site you ever made and explain what you learned from it.'},{title:'Roblox project feedback thread',category:'Game dev',author:'Vatio Labs',replies:9,excerpt:'A place for Roblox creators to share builds, UI, thumbnails, and game ideas.'}];
+const services=['GitHub','GitLab','Replit','Roblox Studio','Itch.io','Vercel','Netlify','Firebase','CodePen','Scratch'];
+const posts=[{title:'Introducing GlobalOSP',date:'Coming soon',excerpt:'The idea behind a project-sharing network that connects GitHub, Replit, Roblox Studio, and more.'},{title:'Why project discovery feels broken',date:'Draft',excerpt:'Why projects are spread across too many platforms and how GlobalOSP can fix that.'},{title:'Building a better showcase page',date:'Draft',excerpt:'What project pages should include: links, screenshots, devlogs, updates, and discussions.'}];
+const tags=a=>a.map(t=>`<span class="tag">${t}</span>`).join('');
+function renderProjects(list=projects){const grid=document.querySelector('[data-project-grid]');if(!grid)return;if(!list.length){grid.innerHTML='<div class="empty">No projects matched your search.</div>';return}grid.innerHTML=list.map(p=>`<article class="project-card"><div class="topline">${p.type} · ${p.service}</div><h3>${p.title}</h3><p>${p.description}</p><div class="tag-row">${tags(p.tags)}</div><p class="meta">Shared by ${p.owner}</p><a class="btn secondary" href="${p.url}" ${p.url!=='#'?'target="_blank" rel="noreferrer"':''}>Open project</a></article>`).join('')}
+function renderThreads(){const grid=document.querySelector('[data-thread-grid]');if(!grid)return;grid.innerHTML=threads.map(t=>`<article class="thread-card"><div class="topline">${t.category}</div><h3>${t.title}</h3><p>${t.excerpt}</p><p class="meta">Started by ${t.author} · ${t.replies} replies</p><a class="btn ghost" href="#">Open thread</a></article>`).join('')}
+function renderServices(){const grid=document.querySelector('[data-service-grid]');if(!grid)return;grid.innerHTML=services.map(s=>`<article class="service-card"><h3>${s}</h3><p>Connect or share projects from ${s}.</p><span class="tag">Integration planned</span></article>`).join('')}
+function renderBlog(){const grid=document.querySelector('[data-blog-grid]');if(!grid)return;grid.innerHTML=posts.map(p=>`<article class="thread-card"><div class="topline">${p.date}</div><h3>${p.title}</h3><p>${p.excerpt}</p><a class="btn ghost" href="#">Read article</a></article>`).join('')}
+function setupFilters(){const search=document.querySelector('[data-project-search]'),buttons=document.querySelectorAll('[data-filter]');let filter='All';function apply(){const q=(search?.value||'').toLowerCase().trim();renderProjects(projects.filter(p=>(filter==='All'||p.type===filter||p.service===filter)&&`${p.title} ${p.type} ${p.owner} ${p.service} ${p.description} ${p.tags.join(' ')}`.toLowerCase().includes(q)))}search?.addEventListener('input',apply);buttons.forEach(b=>b.addEventListener('click',()=>{buttons.forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;apply()}))}
+document.querySelectorAll('[data-demo-form]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();alert('Demo only. Connect this form to Firebase next.')}));renderProjects();renderThreads();renderServices();renderBlog();setupFilters();
