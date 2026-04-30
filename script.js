@@ -32,7 +32,7 @@ const projects = [
     description:
       "A no-BS Roblox studio and Discord community focused on building games, systems, moderation training, and useful server tools.",
     tags: ["Roblox", "Discord", "Community"],
-    link: "#"
+    link: "https://www.roblox.com/communities/212485615/Vatio-Labs#!/about"
   },
   {
     name: "Vanata Bot",
@@ -49,31 +49,8 @@ const projects = [
       "A website-first concept for a phone-locking focus product inspired by physical distraction blockers.",
     tags: ["Hardware", "Focus", "Firebase"],
     link: "#"
-  },
-  {
-    name: "Protocol: Infection",
-    category: "Roblox Game",
-    description:
-      "A story-based zombie apocalypse Roblox game concept with an eerie progressive style, missions, and survival gameplay.",
-    tags: ["Game", "Roblox", "Story"],
-    link: "#"
-  },
-  {
-    name: "The Platform",
-    category: "Reality Show Concept",
-    description:
-      "A high-stakes competition concept where contestants survive games on suspended tiles using a Fall Guys-style progression system.",
-    tags: ["Concept", "Games", "Worldbuilding"],
-    link: "#"
-  },
-  {
-    name: "MonoTech M&I",
-    category: "Event Branding",
-    description:
-      "An intro video and product event brand concept for MonoTech and Innovation, focused on clean tech presentation.",
-    tags: ["Branding", "Video", "Tech"],
-    link: "#"
   }
+
 ];
 
 const blogPosts = [
