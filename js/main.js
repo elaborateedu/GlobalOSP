@@ -1,10 +1,11 @@
 // GlobalOSP — main.js
-// Social platform logic: auth, posts, likes, reposts, comments, profiles, follow system.
+// Social platform logic: auth, posts, likes, reposts, comments, profiles, follow system, Google auth, and photo posts.
 
 const $ = (selector, parent = document) => parent.querySelector(selector);
 const $$ = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
 
 const isFirebaseReady = () => typeof firebase !== "undefined" && firebase.apps && firebase.apps.length;
+const storageReady = () => isFirebaseReady() && typeof firebase.storage === "function";
 
 const demoPosts = [
   {
@@ -15,6 +16,7 @@ const demoPosts = [
     authorPhoto: "",
     platform: "GitHub",
     text: "Just shipped v2.0 of my open-source CLI tool for scaffolding React apps. Feedback welcome!",
+    description: "The new version adds templates, faster installs, and a cleaner command system.",
     projectTitle: "create-react-fast",
     projectUrl: "https://github.com/jdev42/create-react-fast",
     tags: ["TypeScript", "React", "CLI"],
@@ -30,29 +32,14 @@ const demoPosts = [
     authorId: "demo",
     authorPhoto: "",
     platform: "Roblox Studio",
-    text: "Open-sourced my entire combat system framework for Roblox. Took 6 months to build — free for the community.",
+    text: "Open-sourced my entire combat system framework for Roblox.",
+    description: "Includes hitboxes, cooldowns, combo logic, and a clean module layout for other creators.",
     projectTitle: "Roblox Combat Framework",
     projectUrl: "https://www.roblox.com",
     tags: ["Lua", "Roblox", "GameDev"],
     commentsCount: 34,
     repostsCount: 21,
     starsCount: 192,
-    createdAt: null
-  },
-  {
-    id: "demo-3",
-    authorName: "maxreplit",
-    authorHandle: "maxreplit",
-    authorId: "demo",
-    authorPhoto: "",
-    platform: "Replit",
-    text: "Built a tiny ML model that classifies dog breeds in under 100ms — runs entirely in the browser via ONNX.",
-    projectTitle: "dog-breed-classifier",
-    projectUrl: "https://replit.com",
-    tags: ["Python", "ML", "ONNX"],
-    commentsCount: 9,
-    repostsCount: 15,
-    starsCount: 88,
     createdAt: null
   }
 ];
@@ -62,6 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupReveal();
   setupAuthForms();
   setupGithubButtons();
+  setupGoogleButtons();
+  setupRobloxButtons();
   setupCompose();
   setupProfileEditor();
   setupCommentModal();
@@ -109,7 +98,7 @@ function showToast(message, emoji = "✅") {
 
   requestAnimationFrame(() => toast.classList.add("show"));
   $(".toast-close", toast).addEventListener("click", () => hideToast(toast));
-  setTimeout(() => hideToast(toast), 3800);
+  setTimeout(() => hideToast(toast), 4200);
 }
 
 function hideToast(toast) {
@@ -158,27 +147,9 @@ function setupAuthForms() {
       setLoading(button, "Creating account…");
 
       try {
-        await reserveUsername(username);
         const cred = await auth.createUserWithEmailAndPassword(email, password);
         await cred.user.updateProfile({ displayName: name || username });
-
-        await db.collection("users").doc(cred.user.uid).set({
-          name: name || username,
-          username,
-          handle: username,
-          email,
-          bio: "",
-          location: "",
-          website: "",
-          platforms: [],
-          photoURL: "",
-          followersCount: 0,
-          followingCount: 0,
-          postsCount: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
+        await ensureUserProfile(cred.user, { username, profile: {} });
         showToast("Account created!");
         setTimeout(() => (window.location.href = "feed.html"), 900);
       } catch (error) {
@@ -187,16 +158,6 @@ function setupAuthForms() {
       }
     });
   }
-}
-
-async function reserveUsername(username) {
-  const usernameRef = db.collection("usernames").doc(username);
-  const snap = await usernameRef.get();
-  if (snap.exists) throw new Error("That username is already taken.");
-  await usernameRef.set({
-    uid: "pending",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
 }
 
 function setupGithubButtons() {
@@ -218,13 +179,40 @@ function setupGithubButtons() {
   });
 }
 
+function setupGoogleButtons() {
+  $$(".btn-google").forEach((button) => {
+    button.addEventListener("click", async () => {
+      if (!isFirebaseReady()) return showToast("Firebase is not loaded.", "❌");
+
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        const result = await auth.signInWithPopup(provider);
+        await ensureUserProfile(result.user, result.additionalUserInfo);
+        showToast("Signed in with Google!");
+        setTimeout(() => (window.location.href = "feed.html"), 800);
+      } catch (error) {
+        showToast(cleanFirebaseError(error), "❌");
+      }
+    });
+  });
+}
+
+function setupRobloxButtons() {
+  $$(".btn-roblox").forEach((button) => {
+    button.addEventListener("click", () => {
+      showToast("Roblox login needs a small backend/custom token flow. The frontend button is ready.", "ℹ️");
+    });
+  });
+}
+
 async function ensureUserProfile(user, extraInfo = null) {
   const ref = db.collection("users").doc(user.uid);
   const snap = await ref.get();
   if (snap.exists) return;
 
-  const githubUsername = extraInfo?.username || user.email?.split("@")[0] || "builder";
-  const username = normalizeUsername(githubUsername) || `user${Date.now()}`;
+  const rawUsername = extraInfo?.username || user.displayName || user.email?.split("@")[0] || "builder";
+  const username = normalizeUsername(rawUsername) || `user${Date.now()}`;
 
   await ref.set({
     name: user.displayName || username,
@@ -254,6 +242,11 @@ function setupCompose() {
     });
   }
 
+  const photoInput = $("#postPhoto");
+  if (photoInput) {
+    photoInput.addEventListener("change", previewPostPhoto);
+  }
+
   const postBtn = $("#postBtn");
   if (postBtn) {
     postBtn.addEventListener("click", createPost);
@@ -267,6 +260,35 @@ function updateCharCount() {
   counter.textContent = `${input.value.length}/500`;
 }
 
+function previewPostPhoto() {
+  const input = $("#postPhoto");
+  const preview = $("#mediaPreview");
+  if (!input || !preview) return;
+
+  const file = input.files?.[0];
+  if (!file) {
+    preview.style.display = "none";
+    preview.innerHTML = "";
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    showToast("Please upload an image file.", "❌");
+    input.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    showToast("Image must be under 5 MB.", "❌");
+    input.value = "";
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  preview.style.display = "block";
+  preview.innerHTML = `<img src="${url}" alt="Post image preview">`;
+}
+
 async function createPost() {
   if (!isFirebaseReady()) return showToast("Firebase is not loaded.", "❌");
 
@@ -277,26 +299,45 @@ async function createPost() {
     return;
   }
 
-  const text = $("#postInput").value.trim();
-  const platform = $("#postPlatform").value;
+  const text = $("#postInput")?.value.trim() || "";
+  const description = $("#postDescription")?.value.trim() || "";
+  const platform = $("#postPlatform")?.value || "Other";
   const projectTitle = $("#projectTitle")?.value.trim() || "";
   const projectUrl = $("#projectUrl")?.value.trim() || "";
   const tags = parseTags($("#postTags")?.value || "");
+  const photoFile = $("#postPhoto")?.files?.[0] || null;
   const button = $("#postBtn");
 
-  if (!text && !projectUrl) return showToast("Write something or add a project link.", "❌");
+  if (!text && !projectUrl && !photoFile) return showToast("Write something, add a link, or add a photo.", "❌");
   if (text.length > 500) return showToast("Posts must be 500 characters or less.", "❌");
+  if (description.length > 1200) return showToast("Descriptions must be 1200 characters or less.", "❌");
 
   setLoading(button, "Sharing…");
+  setUploadStatus(photoFile ? "Uploading photo…" : "");
 
   try {
     const profile = await getProfile(user.uid);
+    let imageURL = "";
+    let imagePath = "";
+
+    if (photoFile) {
+      if (!storageReady()) throw new Error("Firebase Storage is not loaded. Add firebase-storage-compat.js to the page.");
+      const safeName = photoFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      imagePath = `posts/${user.uid}/${Date.now()}_${safeName}`;
+      const ref = firebase.storage().ref().child(imagePath);
+      await ref.put(photoFile, { contentType: photoFile.type });
+      imageURL = await ref.getDownloadURL();
+    }
+
     await db.collection("posts").add({
       text,
+      description,
       platform,
       projectTitle,
       projectUrl,
       tags,
+      imageURL,
+      imagePath,
       authorId: user.uid,
       authorName: profile?.name || user.displayName || "Anonymous",
       authorHandle: profile?.username || user.email?.split("@")[0] || "user",
@@ -313,18 +354,37 @@ async function createPost() {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    $("#postInput").value = "";
-    if ($("#projectTitle")) $("#projectTitle").value = "";
-    if ($("#projectUrl")) $("#projectUrl").value = "";
-    if ($("#postTags")) $("#postTags").value = "";
-    updateCharCount();
-
+    resetComposeForm();
     showToast("Project shared!");
   } catch (error) {
     showToast(cleanFirebaseError(error), "❌");
   }
 
+  setUploadStatus("");
   setLoading(button, "Share", false);
+}
+
+function resetComposeForm() {
+  ["postInput", "postDescription", "projectTitle", "projectUrl", "postTags"].forEach((id) => {
+    const el = $(`#${id}`);
+    if (el) el.value = "";
+  });
+
+  const photo = $("#postPhoto");
+  if (photo) photo.value = "";
+
+  const preview = $("#mediaPreview");
+  if (preview) {
+    preview.style.display = "none";
+    preview.innerHTML = "";
+  }
+
+  updateCharCount();
+}
+
+function setUploadStatus(text) {
+  const status = $("#uploadStatus");
+  if (status) status.textContent = text;
 }
 
 function loadFeed() {
@@ -380,7 +440,14 @@ function buildPostCard(id, post) {
 
       <span class="post-platform-tag ${platformTagClass(post.platform)}">${escapeHtml(post.platform || "Other")}</span>
 
-      <p class="post-text">${linkify(escapeHtml(post.text || ""))}</p>
+      ${post.text ? `<p class="post-text">${linkify(escapeHtml(post.text))}</p>` : ""}
+      ${post.description ? `<p class="post-description">${linkify(escapeHtml(post.description))}</p>` : ""}
+
+      ${post.imageURL ? `
+        <div class="post-image-wrap">
+          <img class="post-image" src="${escapeAttr(post.imageURL)}" alt="Post image">
+        </div>
+      ` : ""}
 
       ${post.projectUrl || post.projectTitle ? `
         <a class="post-link-preview" href="${escapeAttr(post.projectUrl || "#")}" target="_blank" rel="noreferrer">
@@ -449,6 +516,7 @@ function setupCommentModal() {
     button.addEventListener("click", closeCommentModal);
   });
 
+  $("#commentClose")?.addEventListener("click", closeCommentModal);
   $("#commentSubmit")?.addEventListener("click", submitComment);
 }
 
@@ -460,10 +528,11 @@ function openCommentModal(postId, post) {
   }
 
   modal.dataset.postId = postId;
-  $("#commentPostPreview").textContent = post.text || "Project post";
+  $("#commentPostPreview").textContent = post.text || post.description || "Project post";
   $("#commentInput").value = "";
   $("#commentsList").innerHTML = `<div class="empty-state">Loading comments…</div>`;
   modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
 
   if (!isFirebaseReady() || postId.startsWith("demo")) {
     $("#commentsList").innerHTML = `<div class="empty-state">Demo post. Real comments work after Firebase is connected.</div>`;
@@ -496,7 +565,10 @@ function openCommentModal(postId, post) {
 }
 
 function closeCommentModal() {
-  $("#commentModal")?.classList.remove("open");
+  const modal = $("#commentModal");
+  if (!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
 }
 
 async function submitComment() {
@@ -542,6 +614,7 @@ function setupProfileEditor() {
   if (editProfileBtn) {
     editProfileBtn.addEventListener("click", () => {
       $("#profileEditor")?.classList.toggle("open");
+      $("#profileForm")?.classList.toggle("open");
     });
   }
 
@@ -553,11 +626,11 @@ function setupProfileEditor() {
       if (!user) return showToast("Please sign in first.", "❌");
 
       const data = {
-        name: $("#profileName").value.trim(),
-        bio: $("#profileBio").value.trim(),
-        website: $("#profileWebsite").value.trim(),
-        location: $("#profileLocation").value.trim(),
-        platforms: parsePlatformLinks($("#profilePlatforms").value),
+        name: $("#profileName")?.value.trim() || "",
+        bio: $("#profileBio")?.value.trim() || "",
+        website: $("#profileWebsite")?.value.trim() || "",
+        location: $("#profileLocation")?.value.trim() || "",
+        platforms: parsePlatformLinks($("#profilePlatforms")?.value || ""),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
@@ -579,29 +652,7 @@ async function loadProfilePage() {
   const profileRoot = $("#profileRoot");
   if (!profileRoot) return;
 
-  const loadingHTML = `
-    <div class="profile-card-main">
-      <div class="empty-state">Loading profile…</div>
-    </div>
-  `;
-
-  if (!isFirebaseReady()) {
-    renderProfile({
-      uid: "demo",
-      name: "GlobalOSP Builder",
-      username: "builder",
-      bio: "Sharing games, websites, apps, bots, and experiments from every platform.",
-      website: "https://github.com/elaborateedu/GlobalOSP",
-      location: "Internet",
-      platforms: [{ name: "GitHub", url: "https://github.com/elaborateedu/GlobalOSP" }],
-      followersCount: 128,
-      followingCount: 42,
-      postsCount: 3
-    }, demoPosts);
-    return;
-  }
-
-  profileRoot.dataset.loading = "true";
+  if (!isFirebaseReady()) return;
 
   auth.onAuthStateChanged(async (currentUser) => {
     try {
@@ -609,64 +660,32 @@ async function loadProfilePage() {
       const uid = params.get("uid") || currentUser?.uid;
 
       if (!uid) {
-        profileRoot.innerHTML = `
-          <div class="profile-card-main">
-            <div class="empty-state">
-              Log in to view and edit your profile.
-              <br><br>
-              <a class="btn btn-primary" href="login.html">Log in</a>
-            </div>
-          </div>
-        `;
         return;
       }
 
-      const profileSnap = await db.collection("users").doc(uid).get();
-
-      if (!profileSnap.exists) {
-        profileRoot.innerHTML = `
-          <div class="profile-card-main">
-            <div class="empty-state">
-              Profile not found. If you just signed in with GitHub, refresh once or create a post so your profile can be created.
-            </div>
-          </div>
-        `;
-        return;
+      let profileSnap = await db.collection("users").doc(uid).get();
+      if (!profileSnap.exists && currentUser && currentUser.uid === uid) {
+        await ensureUserProfile(currentUser, {});
+        profileSnap = await db.collection("users").doc(uid).get();
       }
+
+      if (!profileSnap.exists) return;
 
       let posts = [];
       try {
-        // No orderBy here, so it will not get stuck waiting for a Firestore composite index.
-        const postSnap = await db.collection("posts")
-          .where("authorId", "==", uid)
-          .limit(20)
-          .get();
-
-        posts = postSnap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .sort((a, b) => {
-            const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-            const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-            return bd - ad;
-          });
-      } catch (postError) {
-        console.warn("Could not load profile posts:", postError);
-        posts = [];
+        const postSnap = await db.collection("posts").where("authorId", "==", uid).limit(20).get();
+        posts = postSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })).sort((a, b) => {
+          const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+          const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+          return bd - ad;
+        });
+      } catch (error) {
+        console.warn("Profile posts failed:", error);
       }
 
-      const profile = { uid, ...profileSnap.data() };
-      renderProfile(profile, posts, currentUser);
+      renderProfile({ uid, ...profileSnap.data() }, posts, currentUser);
     } catch (error) {
       console.error("Profile load failed:", error);
-      profileRoot.innerHTML = `
-        <div class="profile-card-main">
-          <div class="empty-state">
-            Could not load profile. Check your Firebase rules and console errors.
-            <br><br>
-            ${escapeHtml(cleanFirebaseError(error))}
-          </div>
-        </div>
-      `;
     }
   });
 }
@@ -685,9 +704,9 @@ function renderProfile(profile, posts = [], currentUser = null) {
   setText("profileDisplayName", profile.name || "Unnamed Builder");
   setText("profileHandle", `@${profile.username || profile.handle || "builder"}`);
   setText("profileBioText", profile.bio || "No bio yet.");
-  setText("profileLocationText", profile.location || "No location");
-  setText("followersCount", profile.followersCount || 0);
-  setText("followingCount", profile.followingCount || 0);
+  setText("profileLocationText", profile.location ? `📍 ${profile.location}` : "📍 No location");
+  setText("followersCount", profile.followersCount || profile.followers || 0);
+  setText("followingCount", profile.followingCount || profile.following || 0);
   setText("postsCount", profile.postsCount || posts.length || 0);
 
   const websiteLink = $("#profileWebsiteLink");
@@ -743,7 +762,7 @@ function renderProfile(profile, posts = [], currentUser = null) {
 async function followProfileUser() {
   if (!isFirebaseReady()) return showToast("Firebase is not loaded.", "❌");
   const currentUser = auth.currentUser;
-  const targetUid = $("#followBtn").dataset.uid;
+  const targetUid = $("#followBtn")?.dataset.uid;
 
   if (!currentUser || !targetUid || currentUser.uid === targetUid) return;
 
@@ -810,30 +829,18 @@ function setLoading(button, text, disabled = true) {
 }
 
 function parseTags(value) {
-  return value
-    .split(",")
-    .map((tag) => tag.trim().replace(/^#/, ""))
-    .filter(Boolean)
-    .slice(0, 8);
+  return value.split(",").map((tag) => tag.trim().replace(/^#/, "")).filter(Boolean).slice(0, 8);
 }
 
 function parsePlatformLinks(value) {
-  return value
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [name, url] = line.split("|").map((x) => x.trim());
-      return { name: name || "Link", url: url || "#" };
-    })
-    .slice(0, 8);
+  return value.split("\n").map((line) => line.trim()).filter(Boolean).map((line) => {
+    const [name, url] = line.split("|").map((x) => x.trim());
+    return { name: name || "Link", url: url || "#" };
+  }).slice(0, 8);
 }
 
 function normalizeUsername(value) {
-  return (value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9_]/g, "")
-    .slice(0, 24);
+  return (value || "").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24);
 }
 
 function platformTagClass(platform = "") {
@@ -846,12 +853,7 @@ function platformTagClass(platform = "") {
 }
 
 function getInitials(name) {
-  return (name || "U")
-    .split(/\s+/)
-    .map((x) => x[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
+  return (name || "U").split(/\s+/).map((x) => x[0]).join("").substring(0, 2).toUpperCase();
 }
 
 function timeAgo(date) {
@@ -867,12 +869,7 @@ function linkify(text) {
 }
 
 function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
 
 function escapeAttr(value = "") {

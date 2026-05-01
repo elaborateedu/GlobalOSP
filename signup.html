@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Sign up — GlobalOSP</title>
-  <meta name="description" content="GlobalOSP is a social platform for sharing projects from GitHub, Replit, Roblox Studio, Scratch, GitLab, and any URL." />
+
   <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/auth-media.css" />
 </head>
+
 <body>
   <main class="auth-page">
     <section class="auth-card">
@@ -20,9 +24,13 @@
       </a>
 
       <h1 class="auth-title">Join GlobalOSP</h1>
-      <p class="auth-subtitle">Share your projects with the world — from any platform.</p>
+      <p class="auth-subtitle">Share projects from any platform.</p>
 
-      <button class="btn btn-github" type="button">Sign up with GitHub</button>
+      <button class="btn btn-google" type="button">Sign up with Google</button>
+      <button class="btn btn-github" type="button" style="margin-top:.6rem;">Sign up with GitHub</button>
+      <button class="btn btn-roblox" type="button" style="margin-top:.6rem;">Sign up with Roblox</button>
+
+      <p class="oauth-note">Roblox login needs a tiny backend because Firebase does not have a built-in Roblox provider.</p>
 
       <div class="auth-divider"><span>or</span></div>
 
@@ -53,9 +61,11 @@
       <p class="auth-footer">Already have an account? <a href="login.html">Sign in</a></p>
     </section>
   </main>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
 </body>

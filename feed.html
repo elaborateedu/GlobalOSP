@@ -3,14 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Feed — GlobalOSP</title>
-  <meta name="description" content="GlobalOSP is a social platform for sharing projects from GitHub, Replit, Roblox Studio, Scratch, GitLab, and any URL." />
+  <meta name="description" content="The GlobalOSP social feed for projects." />
+
   <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/auth-media.css" />
 </head>
+
 <body>
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
@@ -20,9 +25,9 @@
       </a>
 
       <div class="nav-links">
-        <a class="nav-link " href="index.html">Explore</a>
-<a class="nav-link active" href="feed.html">Feed</a>
-<a class="nav-link " href="profile.html">Profile</a>
+        <a class="nav-link" href="index.html">Explore</a>
+        <a class="nav-link active" href="feed.html">Feed</a>
+        <a class="nav-link" href="profile.html">Profile</a>
       </div>
 
       <div class="nav-actions">
@@ -37,12 +42,13 @@
 
     <div class="mobile-menu" id="mobileMenu">
       <a href="index.html">Explore</a>
-<a href="feed.html">Feed</a>
-<a href="profile.html">Profile</a>
-<a href="login.html">Log in</a>
-<a href="signup.html">Sign up free →</a>
+      <a href="feed.html">Feed</a>
+      <a href="profile.html">Profile</a>
+      <a href="login.html">Log in</a>
+      <a href="signup.html">Sign up free →</a>
     </div>
   </nav>
+
   <main class="feed-layout">
     <aside class="sidebar-left">
       <p class="sidebar-title">GlobalOSP</p>
@@ -50,7 +56,6 @@
         <a class="sidebar-link active" href="feed.html"><span class="icon">⌂</span><span>Home</span></a>
         <a class="sidebar-link" href="feed.html"><span class="icon">⌕</span><span>Explore</span></a>
         <a class="sidebar-link" href="profile.html"><span class="icon">◉</span><span>Profile</span></a>
-        <a class="sidebar-link" href="profile.html"><span class="icon">⚙</span><span>Settings</span></a>
       </nav>
     </aside>
 
@@ -59,6 +64,7 @@
 
       <section class="compose-box">
         <div class="compose-avatar">YOU</div>
+
         <div class="compose-form">
           <textarea id="postInput" class="compose-input" maxlength="500" placeholder="Share a project, update, idea, or devlog..."></textarea>
 
@@ -72,15 +78,24 @@
               <option>Website</option>
               <option>Other</option>
             </select>
+
             <input id="projectTitle" class="compose-field" placeholder="Project title" />
             <input id="projectUrl" class="compose-field" placeholder="Project URL" />
             <input id="postTags" class="compose-field" placeholder="Tags: js, roblox, web" />
+
+            <textarea id="postDescription" class="compose-description" maxlength="1200" placeholder="Write a longer description. What is the project? What did you build? What feedback do you want?"></textarea>
+
+            <div class="media-upload">
+              <label for="postPhoto">Add photo</label>
+              <input id="postPhoto" class="media-upload-input" type="file" accept="image/*" />
+              <div id="mediaPreview" class="media-preview"></div>
+            </div>
           </div>
 
           <div class="compose-actions">
             <div class="compose-tools">
               <span id="charCount">0/500</span>
-              <span>Use commas for tags.</span>
+              <span id="uploadStatus" class="upload-status"></span>
             </div>
             <button id="postBtn" class="btn btn-primary">Share</button>
           </div>
@@ -103,11 +118,6 @@
           <p class="trending-name">#TSProjects</p>
           <p class="trending-count">893 posts</p>
         </div>
-        <div class="trending-item">
-          <p class="trending-label">Any platform · Games</p>
-          <p class="trending-name">#IndieGameDev</p>
-          <p class="trending-count">501 posts</p>
-        </div>
       </div>
     </aside>
   </main>
@@ -127,9 +137,11 @@
       <button class="btn btn-primary btn-full" id="commentSubmit">Comment</button>
     </div>
   </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
 </body>
