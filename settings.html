@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Settings — GlobalOSP</title>
+
+  <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/social-polish.css" />
+</head>
+
+<body data-settings-page>
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo-icon.svg" alt="GlobalOSP" class="nav-logo-icon" />
+        <span>GlobalOSP</span>
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">Explore</a>
+        <a class="nav-link" href="feed.html">Feed</a>
+        <a class="nav-link" href="profile.html">Profile</a>
+        <a class="nav-link active" href="settings.html">Settings</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="profile.html" class="btn btn-ghost">Profile</a>
+        <button class="btn btn-primary" id="logoutEverywhereBtn" type="button">Log out</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="settings-shell">
+    <div class="settings-container">
+      <header class="settings-header">
+        <h1>Settings</h1>
+        <p>Manage your account, profile, connected platforms, privacy, and notifications.</p>
+      </header>
+
+      <div class="settings-layout">
+        <aside class="settings-nav">
+          <button class="active" data-settings-tab="profile">Profile</button>
+          <button data-settings-tab="account">Account</button>
+          <button data-settings-tab="platforms">Platforms</button>
+          <button data-settings-tab="notifications">Notifications</button>
+          <button data-settings-tab="privacy">Privacy</button>
+          <button data-settings-tab="danger">Danger zone</button>
+        </aside>
+
+        <section class="settings-content">
+          <form class="settings-panel active" data-settings-panel="profile" id="settingsProfileForm">
+            <h2>Profile</h2>
+            <p>This is what people see when they visit your GlobalOSP profile.</p>
+
+            <div class="settings-grid">
+              <div>
+                <label for="settingsName">Display name</label>
+                <input id="settingsName" placeholder="Your name" />
+              </div>
+
+              <div>
+                <label for="settingsUsername">Username</label>
+                <input id="settingsUsername" placeholder="qapps" />
+              </div>
+
+              <div class="full">
+                <label for="settingsBio">Bio</label>
+                <textarea id="settingsBio" placeholder="What do you build?"></textarea>
+              </div>
+
+              <div>
+                <label for="settingsLocation">Location</label>
+                <input id="settingsLocation" placeholder="Internet" />
+              </div>
+
+              <div>
+                <label for="settingsWebsite">Website</label>
+                <input id="settingsWebsite" placeholder="https://..." />
+              </div>
+
+              <div class="full">
+                <label for="settingsPhotoURL">Profile picture URL</label>
+                <input id="settingsPhotoURL" placeholder="https://example.com/avatar.png" />
+              </div>
+
+              <div class="full">
+                <label for="settingsPlatforms">Connected platforms</label>
+                <textarea id="settingsPlatforms" placeholder="GitHub|https://github.com/you&#10;Roblox|https://www.roblox.com/users/..."></textarea>
+              </div>
+            </div>
+
+            <br>
+            <button class="btn btn-primary" type="submit">Save settings</button>
+          </form>
+
+          <section class="settings-panel" data-settings-panel="account">
+            <h2>Account</h2>
+            <p>Basic account information.</p>
+
+            <div class="settings-grid">
+              <div class="full">
+                <label for="settingsEmail">Email</label>
+                <input id="settingsEmail" disabled />
+              </div>
+
+              <div class="full">
+                <label>Login providers</label>
+                <input value="Email, Google, GitHub. Roblox requires backend setup." disabled />
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-panel" data-settings-panel="platforms">
+            <h2>Platforms</h2>
+            <p>These links are shown on your profile and help people find your work.</p>
+
+            <div class="toggle-row">
+              <div>
+                <strong>GitHub</strong>
+                <span>Add your GitHub profile in the Profile tab.</span>
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <div>
+                <strong>Roblox</strong>
+                <span>Add your Roblox profile URL in connected platforms.</span>
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <div>
+                <strong>Replit / Scratch / GitLab</strong>
+                <span>Use the same Platform|URL format.</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-panel" data-settings-panel="notifications">
+            <h2>Notifications</h2>
+            <p>Frontend settings for now. We can wire these into Firestore later.</p>
+
+            <label class="toggle-row">
+              <div>
+                <strong>Comments</strong>
+                <span>Notify me when someone comments on my post.</span>
+              </div>
+              <input type="checkbox" checked />
+            </label>
+
+            <label class="toggle-row">
+              <div>
+                <strong>Followers</strong>
+                <span>Notify me when someone follows me.</span>
+              </div>
+              <input type="checkbox" checked />
+            </label>
+
+            <label class="toggle-row">
+              <div>
+                <strong>Stars</strong>
+                <span>Notify me when someone stars my project.</span>
+              </div>
+              <input type="checkbox" />
+            </label>
+          </section>
+
+          <section class="settings-panel" data-settings-panel="privacy">
+            <h2>Privacy</h2>
+            <p>More privacy features can be added as the platform grows.</p>
+
+            <label class="toggle-row">
+              <div>
+                <strong>Public profile</strong>
+                <span>Allow people to see your profile and posts.</span>
+              </div>
+              <input type="checkbox" checked />
+            </label>
+
+            <label class="toggle-row">
+              <div>
+                <strong>Show connected platforms</strong>
+                <span>Display your GitHub, Roblox, Replit, and other links.</span>
+              </div>
+              <input type="checkbox" checked />
+            </label>
+          </section>
+
+          <section class="settings-panel danger-zone" data-settings-panel="danger">
+            <h2>Danger zone</h2>
+            <p>Account deletion should be done later with a backend or stricter Firebase rules.</p>
+
+            <button class="btn btn-outline" type="button" disabled>Delete account coming later</button>
+          </section>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/social-polish.js"></script>
+</body>
+</html>
