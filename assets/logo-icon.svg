@@ -1,27 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <!-- Globe circle outline -->
-  <circle cx="100" cy="100" r="88" stroke="currentColor" stroke-width="12" fill="none"/>
-
-  <!-- Horizontal equator line (split for keyhole) -->
-  <line x1="12" y1="100" x2="62" y2="100" stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
-  <line x1="138" y1="100" x2="188" y2="100" stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
-
-  <!-- Vertical meridian (split for keyhole) -->
-  <line x1="100" y1="12" x2="100" y2="56" stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
-  <line x1="100" y1="144" x2="100" y2="188" stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
-
-  <!-- Keyhole shape centered -->
-  <!-- Circle of keyhole -->
-  <circle cx="100" cy="82" r="18" stroke="currentColor" stroke-width="11" fill="none"/>
-  <!-- Stem of keyhole -->
-  <line x1="100" y1="98" x2="100" y2="128" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
-
-  <!-- Top-left arc segment -->
-  <path d="M 32 55 Q 55 30 78 22" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <!-- Top-right arc segment -->
-  <path d="M 122 22 Q 145 30 168 55" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <!-- Bottom-left arc segment -->
-  <path d="M 25 130 Q 45 162 72 176" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <!-- Bottom-right arc segment -->
-  <path d="M 128 176 Q 155 162 175 130" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="96" height="96" rx="24" fill="#090909"/>
+<circle cx="48" cy="48" r="28" stroke="#FAFAFA" stroke-width="6"/>
+<path d="M20 48H76" stroke="#FAFAFA" stroke-width="6" stroke-linecap="round"/>
+<path d="M48 20C57 29 61 38 61 48C61 58 57 67 48 76C39 67 35 58 35 48C35 38 39 29 48 20Z" stroke="#FAFAFA" stroke-width="6" stroke-linejoin="round"/>
 </svg>
