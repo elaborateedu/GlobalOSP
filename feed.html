@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed — GlobalOSP</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo-icon.svg" alt="GlobalOSP" class="nav-logo-icon" />
+        <span class="nav-logo-text">GlobalOSP</span>
+      </a>
+      <div class="nav-actions" style="margin-left:auto">
+        <a href="login.html" class="btn btn-ghost">Log in</a>
+        <a href="signup.html" class="btn btn-primary">Sign up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- FEED LAYOUT -->
+  <div class="feed-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-left">
+      <p class="sidebar-title">Menu</p>
+      <nav class="sidebar-nav">
+        <a href="feed.html" class="sidebar-link active"><span class="icon">🏠</span> <span>Home</span></a>
+        <a href="#" class="sidebar-link"><span class="icon">🔍</span> <span>Explore</span></a>
+        <a href="#" class="sidebar-link"><span class="icon">🔔</span> <span>Notifications</span></a>
+        <a href="#" class="sidebar-link"><span class="icon">🔖</span> <span>Bookmarks</span></a>
+        <a href="profile.html" class="sidebar-link"><span class="icon">👤</span> <span>Profile</span></a>
+        <a href="#" class="sidebar-link"><span class="icon">⚙️</span> <span>Settings</span></a>
+      </nav>
+      <div style="margin-top:1.5rem;padding:.5rem">
+        <a href="signup.html" class="btn btn-primary btn-full" style="width:100%;justify-content:center">+ Share Project</a>
+      </div>
+    </aside>
+
+    <!-- MAIN FEED -->
+    <main class="feed-main">
+      <div class="feed-header">Home</div>
+
+      <!-- Compose -->
+      <div class="compose-box">
+        <div class="compose-avatar"></div>
+        <div class="compose-form">
+          <textarea class="compose-input" id="postInput" rows="2" placeholder="Share a project… paste a link, describe what you built, tag the platform."></textarea>
+          <div style="margin-bottom:.5rem">
+            <select id="postPlatform" class="form-input" style="padding:.4rem .6rem;font-size:.82rem;width:auto;display:inline-block">
+              <option value="GitHub">GitHub</option>
+              <option value="Replit">Replit</option>
+              <option value="Roblox Studio">Roblox Studio</option>
+              <option value="Scratch">Scratch</option>
+              <option value="GitLab">GitLab</option>
+              <option value="Bitbucket">Bitbucket</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="compose-actions">
+            <div class="compose-tools">
+              <button class="compose-tool-btn" title="Add link">🔗</button>
+              <button class="compose-tool-btn" title="Add tags">🏷️</button>
+              <button class="compose-tool-btn" title="Add image">🖼️</button>
+            </div>
+            <button class="btn btn-primary" id="postBtn" style="padding:.45rem 1.25rem;font-size:.88rem">Share</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="feed-tabs">
+        <button class="feed-tab active">For you</button>
+        <button class="feed-tab">Following</button>
+        <button class="feed-tab">Trending</button>
+      </div>
+
+      <!-- Posts -->
+      <div id="feedPosts">
+        <!-- Demo posts (shown when Firebase not configured) -->
+        <div class="post-card">
+          <div class="post-avatar" style="background:#6366f1">JD</div>
+          <div class="post-body">
+            <div class="post-meta"><strong>jdev42</strong> <span class="post-handle">@jdev42</span> <span class="post-time">· 2h</span></div>
+            <div class="post-platform-tag github-tag">GitHub</div>
+            <p class="post-text">Just shipped v2.0 of my open-source CLI tool for scaffolding React apps. 🚀 Feedback welcome!</p>
+            <div class="post-link-preview">
+              <span class="plp-icon">📦</span>
+              <div><div class="plp-title">create-react-fast</div><div class="plp-url">github.com/jdev42/create-react-fast</div></div>
+            </div>
+            <div class="post-tags"><span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">CLI</span></div>
+            <div class="post-actions">
+              <button class="pa-btn">💬 12</button>
+              <button class="pa-btn">🔁 8</button>
+              <button class="pa-btn">⭐ 47</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-avatar" style="background:#f59e0b">RL</div>
+          <div class="post-body">
+            <div class="post-meta"><strong>robloxlua</strong> <span class="post-handle">@robloxlua</span> <span class="post-time">· 5h</span></div>
+            <div class="post-platform-tag roblox-tag">Roblox Studio</div>
+            <p class="post-text">Open-sourced my entire combat system framework for Roblox. Took 6 months to build — free for the community 🎮</p>
+            <div class="post-tags"><span class="tag">Lua</span><span class="tag">Roblox</span><span class="tag">GameDev</span></div>
+            <div class="post-actions">
+              <button class="pa-btn">💬 34</button>
+              <button class="pa-btn">🔁 21</button>
+              <button class="pa-btn">⭐ 192</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-avatar" style="background:#10b981">mx</div>
+          <div class="post-body">
+            <div class="post-meta"><strong>maxreplit</strong> <span class="post-handle">@maxreplit</span> <span class="post-time">· 1d</span></div>
+            <div class="post-platform-tag replit-tag">Replit</div>
+            <p class="post-text">Built a tiny ML model that classifies dog breeds in under 100ms — runs entirely in the browser via ONNX. 🐶</p>
+            <div class="post-link-preview">
+              <span class="plp-icon">🤖</span>
+              <div><div class="plp-title">dog-breed-classifier</div><div class="plp-url">replit.com/@maxreplit/dog-breed-classifier</div></div>
+            </div>
+            <div class="post-tags"><span class="tag">Python</span><span class="tag">ML</span><span class="tag">ONNX</span></div>
+            <div class="post-actions">
+              <button class="pa-btn">💬 9</button>
+              <button class="pa-btn">🔁 15</button>
+              <button class="pa-btn">⭐ 88</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-avatar" style="background:#ef4444">sa</div>
+          <div class="post-body">
+            <div class="post-meta"><strong>scratchalot</strong> <span class="post-handle">@scratchalot</span> <span class="post-time">· 2d</span></div>
+            <div class="post-platform-tag" style="background:#fff3d4;color:#9a5c00">Scratch</div>
+            <p class="post-text">Made a full physics engine in Scratch. Yes, Scratch. Don't underestimate the platform 😤</p>
+            <div class="post-tags"><span class="tag">Scratch</span><span class="tag">Physics</span><span class="tag">GameDev</span></div>
+            <div class="post-actions">
+              <button class="pa-btn">💬 56</button>
+              <button class="pa-btn">🔁 103</button>
+              <button class="pa-btn">⭐ 441</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar-right">
+      <div class="trending-card">
+        <div class="trending-header">🔥 Trending today</div>
+        <div class="trending-item">
+          <div class="trending-label">Roblox · GameDev</div>
+          <div class="trending-name">#RobloxOpen</div>
+          <div class="trending-count">1.2k posts</div>
+        </div>
+        <div class="trending-item">
+          <div class="trending-label">GitHub · TypeScript</div>
+          <div class="trending-name">#TSProjects</div>
+          <div class="trending-count">893 posts</div>
+        </div>
+        <div class="trending-item">
+          <div class="trending-label">Python · ML</div>
+          <div class="trending-name">#OpenML</div>
+          <div class="trending-count">674 posts</div>
+        </div>
+        <div class="trending-item">
+          <div class="trending-label">Any platform · Games</div>
+          <div class="trending-name">#IndieGameDev</div>
+          <div class="trending-count">501 posts</div>
+        </div>
+      </div>
+
+      <div class="trending-card">
+        <div class="trending-header">👥 Who to follow</div>
+        <div class="trending-item" style="display:flex;align-items:center;gap:.75rem">
+          <div class="post-avatar" style="background:#6366f1;width:36px;height:36px;font-size:.7rem">JD</div>
+          <div style="flex:1"><div class="trending-name">jdev42</div><div class="trending-count">@jdev42</div></div>
+          <button class="btn btn-outline" style="padding:.3rem .75rem;font-size:.78rem">Follow</button>
+        </div>
+        <div class="trending-item" style="display:flex;align-items:center;gap:.75rem">
+          <div class="post-avatar" style="background:#10b981;width:36px;height:36px;font-size:.7rem">mx</div>
+          <div style="flex:1"><div class="trending-name">maxreplit</div><div class="trending-count">@maxreplit</div></div>
+          <button class="btn btn-outline" style="padding:.3rem .75rem;font-size:.78rem">Follow</button>
+        </div>
+      </div>
+
+      <p style="font-size:.72rem;color:var(--gray-400);padding:.5rem;font-family:var(--font-mono)">
+        GlobalOSP · Terms · Privacy<br/>© 2025 GlobalOSP
+      </p>
+    </aside>
+  </div>
+
+  <!-- Firebase (replace with your config) -->
+  <!--
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  -->
+  <script src="js/main.js"></script>
+</body>
+</html>

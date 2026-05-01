@@ -1,1 +1,268 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home | GlobalOSP</title><meta name="description" content="GlobalOSP is a project-sharing network for games, websites, apps, bots, and creative builds across platforms."/><link rel="icon" type="image/jpeg" href="favicon.jpeg"/><link rel="stylesheet" href="styles.css"/></head><body><header class="site-header"><div class="container nav"><a class="brand" href="index.html">GlobalOSP</a><button class="menu-button" data-menu-button>Menu</button><nav class="nav-links" data-nav-links><a class="active" href="index.html">Home</a><a class="" href="explore.html">Explore</a><a class="" href="submit.html">Submit</a><a class="" href="forums.html">Forums</a><a class="" href="services.html">Services</a><a class="" href="blog.html">Blog</a><a class="" href="about.html">About</a></nav><div class="nav-actions"><a class="btn ghost" href="login.html">Log in</a><a class="btn primary" href="submit.html">Share project</a></div></div></header><main><section class="hero"><div class="container hero-inner"><div class="eyebrow"><span class="dot"></span> Project sharing for everything</div><h1>The open hub for games, websites, apps, and ideas.</h1><p class="lede">GlobalOSP is where anyone can share a project from GitHub, Replit, GitLab, Roblox Studio, Firebase, Itch.io, and more — then get feedback, post updates, and build a community around it.</p><div class="hero-actions"><a class="btn primary" href="explore.html">Explore projects</a><a class="btn secondary" href="submit.html">Share your project</a></div><div class="product-shot"><div class="browser-bar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span></div><div class="mock-grid"><div class="card mock-card"><span class="tag">Roblox Studio</span><h3>Protocol: Infection</h3><p>A survival game devlog with feedback threads.</p></div><div class="card mock-card"><span class="tag">GitHub</span><h3>Open dashboard</h3><p>A website project with source code and releases.</p></div><div class="card mock-card"><span class="tag">Replit</span><h3>Mini tool</h3><p>A quick app demo people can remix.</p></div></div></div></div></section><section class="feature-band"><div class="container"><h2>One profile. Every project.</h2><p>Instead of your work being split across random platforms, GlobalOSP becomes the public place where people can discover all of it.</p></div></section><section class="section"><div class="container"><div class="section-top"><h2>How it works</h2><p>Simple enough for beginners, flexible enough for serious builders.</p></div><div class="grid-3"><article class="card"><span class="tag">01</span><h3>Connect</h3><p>Add links from services like GitHub, Replit, Roblox, GitLab, Itch.io, Netlify, and more.</p></article><article class="card"><span class="tag">02</span><h3>Share</h3><p>Create a project page with screenshots, links, tags, devlogs, updates, and discussion threads.</p></article><article class="card"><span class="tag">03</span><h3>Grow</h3><p>Get feedback, find collaborators, post updates, and build a public record of your work.</p></article></div></div></section></main><footer class="footer"><div class="container footer-inner"><span>© <span data-year></span> GlobalOSP</span><span>Share any project, from anywhere.</span></div></footer><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlobalOSP — Global Open Source Projects</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo-icon.svg" alt="GlobalOSP icon" class="nav-logo-icon" />
+        <span class="nav-logo-text">GlobalOSP</span>
+      </a>
+      <div class="nav-links">
+        <a href="#explore" class="nav-link">Explore</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="feed.html" class="nav-link">Feed</a>
+      </div>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Log in</a>
+        <a href="signup.html" class="btn btn-primary">Sign up</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#explore">Explore</a>
+      <a href="#features">Features</a>
+      <a href="feed.html">Feed</a>
+      <a href="login.html">Log in</a>
+      <a href="signup.html">Sign up free →</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-floating-cards">
+      <div class="float-card fc1">
+        <span class="fc-dot roblox"></span> RobloxGame
+        <span class="fc-tag">Lua</span>
+      </div>
+      <div class="float-card fc2">
+        <span class="fc-dot github"></span> cool-api
+        <span class="fc-tag">TypeScript</span>
+      </div>
+      <div class="float-card fc3">
+        <span class="fc-dot replit"></span> ML experiment
+        <span class="fc-tag">Python</span>
+      </div>
+      <div class="float-card fc4">
+        <span class="fc-dot scratch"></span> Game engine
+        <span class="fc-tag">C++</span>
+      </div>
+      <div class="float-card fc5">
+        <span class="fc-dot github"></span> design-system
+        <span class="fc-tag">CSS</span>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span> Open to all developers
+      </div>
+      <h1 class="hero-title">
+        One place for<br />
+        <span class="title-accent">every</span> project.
+      </h1>
+      <p class="hero-subtitle">
+        GitHub, Replit, Roblox, Scratch — it doesn't matter where you build.
+        GlobalOSP lets you share, discover, and collaborate on any open source project,
+        from any platform.
+      </p>
+      <div class="hero-cta">
+        <a href="signup.html" class="btn btn-primary btn-lg">Start sharing free</a>
+        <a href="feed.html" class="btn btn-outline btn-lg">Browse projects →</a>
+      </div>
+      <p class="hero-note">No credit card. No platform lock-in.</p>
+    </div>
+
+    <!-- Illustration -->
+    <div class="hero-illustration">
+      <div class="globe-wrap">
+        <img src="assets/logo-icon.svg" alt="" class="globe-img spinning" />
+        <div class="orbit o1"><div class="orb-dot"></div></div>
+        <div class="orbit o2"><div class="orb-dot"></div></div>
+        <div class="orbit o3"><div class="orb-dot"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PLATFORM LOGOS ═══════════════════════════ -->
+  <section class="platforms" id="explore">
+    <p class="platforms-label">Post projects from anywhere</p>
+    <div class="platforms-strip">
+      <div class="platform-pill">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </div>
+      <div class="platform-pill">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M11.374 0L0 6.177v11.646L11.374 24 24 17.823V6.177L11.374 0zm8.273 16.664l-8.273 4.658-8.274-4.658V7.336L11.374 2.68l8.273 4.656v9.328z"/></svg>
+        Replit
+      </div>
+      <div class="platform-pill">
+        <span style="font-size:14px">🎮</span> Roblox Studio
+      </div>
+      <div class="platform-pill">
+        <span style="font-size:14px">🐱</span> Scratch
+      </div>
+      <div class="platform-pill">
+        <span style="font-size:14px">🦊</span> GitLab
+      </div>
+      <div class="platform-pill">
+        <span style="font-size:14px">🪣</span> Bitbucket
+      </div>
+      <div class="platform-pill">
+        <span style="font-size:14px">🌐</span> Any URL
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FEATURES ═══════════════════════════ -->
+  <section class="features" id="features">
+    <div class="section-header">
+      <span class="section-eyebrow">Why GlobalOSP</span>
+      <h2 class="section-title">Built for builders,<br/>not platforms.</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card fc-large">
+        <div class="feature-icon">🌍</div>
+        <h3>Platform-agnostic sharing</h3>
+        <p>Link any project — a Roblox game, a GitHub repo, a Replit app. Your work deserves an audience regardless of where it lives.</p>
+        <div class="feature-demo">
+          <div class="demo-row"><span class="demo-tag github-tag">GitHub</span> <span class="demo-url">github.com/you/project</span></div>
+          <div class="demo-row"><span class="demo-tag replit-tag">Replit</span> <span class="demo-url">replit.com/@you/project</span></div>
+          <div class="demo-row"><span class="demo-tag roblox-tag">Roblox</span> <span class="demo-url">roblox.com/games/12345</span></div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>X-style feed</h3>
+        <p>A fast, infinite feed of projects. Follow developers, star projects, and get updates in real time.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🏷️</div>
+        <h3>Rich tagging</h3>
+        <p>Tag by language, platform, and topic. Find exactly what you're looking for or get discovered by the right people.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Community reactions</h3>
+        <p>Stars, comments, and reposts. Build a reputation across all your projects — not just the ones on one platform.</p>
+      </div>
+
+      <div class="feature-card fc-wide">
+        <div class="feature-icon">🔓</div>
+        <h3>Always open source first</h3>
+        <p>GlobalOSP is built for the open source community. We believe code should be shared, not siloed. Every project on the platform is discoverable by everyone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ DEMO FEED ═══════════════════════════ -->
+  <section class="demo-section">
+    <div class="section-header">
+      <span class="section-eyebrow">Live feed preview</span>
+      <h2 class="section-title">See what's being built.</h2>
+    </div>
+    <div class="demo-feed">
+      <div class="post-card">
+        <div class="post-avatar" style="background:#6366f1">JD</div>
+        <div class="post-body">
+          <div class="post-meta"><strong>jdev42</strong> <span class="post-handle">@jdev42</span> <span class="post-time">· 2h</span></div>
+          <div class="post-platform-tag github-tag">GitHub</div>
+          <p class="post-text">Just shipped v2.0 of my open-source CLI tool for scaffolding React apps. 🚀 Feedback welcome!</p>
+          <div class="post-link-preview">
+            <span class="plp-icon">📦</span>
+            <div><div class="plp-title">create-react-fast</div><div class="plp-url">github.com/jdev42/create-react-fast</div></div>
+          </div>
+          <div class="post-tags"><span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">CLI</span></div>
+          <div class="post-actions">
+            <button class="pa-btn">💬 12</button>
+            <button class="pa-btn">🔁 8</button>
+            <button class="pa-btn">⭐ 47</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-avatar" style="background:#f59e0b">RL</div>
+        <div class="post-body">
+          <div class="post-meta"><strong>robloxlua</strong> <span class="post-handle">@robloxlua</span> <span class="post-time">· 5h</span></div>
+          <div class="post-platform-tag roblox-tag">Roblox Studio</div>
+          <p class="post-text">Open-sourced my entire combat system framework for Roblox. Took 6 months to build — free for the community. 🎮</p>
+          <div class="post-tags"><span class="tag">Lua</span><span class="tag">Roblox</span><span class="tag">GameDev</span></div>
+          <div class="post-actions">
+            <button class="pa-btn">💬 34</button>
+            <button class="pa-btn">🔁 21</button>
+            <button class="pa-btn">⭐ 192</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-avatar" style="background:#10b981">mx</div>
+        <div class="post-body">
+          <div class="post-meta"><strong>maxreplit</strong> <span class="post-handle">@maxreplit</span> <span class="post-time">· 1d</span></div>
+          <div class="post-platform-tag replit-tag">Replit</div>
+          <p class="post-text">Built a tiny ML model that classifies dog breeds in under 100ms — runs entirely in the browser via ONNX. 🐶</p>
+          <div class="post-link-preview">
+            <span class="plp-icon">🤖</span>
+            <div><div class="plp-title">dog-breed-classifier</div><div class="plp-url">replit.com/@maxreplit/dog-breed-classifier</div></div>
+          </div>
+          <div class="post-tags"><span class="tag">Python</span><span class="tag">ML</span><span class="tag">ONNX</span></div>
+          <div class="post-actions">
+            <button class="pa-btn">💬 9</button>
+            <button class="pa-btn">🔁 15</button>
+            <button class="pa-btn">⭐ 88</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="feed.html" class="btn btn-primary" style="margin:2rem auto 0;display:table">See full feed →</a>
+  </section>
+
+  <!-- ═══════════════════════════ CTA ═══════════════════════════ -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <img src="assets/logo-icon.svg" alt="" class="cta-logo spinning" />
+      <h2>Your project deserves an audience.</h2>
+      <p>Join thousands of developers sharing their work across every platform.</p>
+      <a href="signup.html" class="btn btn-primary btn-lg">Create your profile →</a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo-icon.svg" alt="GlobalOSP" width="28" />
+        <span>GlobalOSP</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="https://github.com" target="_blank">GitHub</a>
+      </div>
+      <p class="footer-copy">© 2025 GlobalOSP. Built by developers, for developers.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
