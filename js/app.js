@@ -1,30 +1,714 @@
 
-const $=(s,p=document)=>p.querySelector(s),$$=(s,p=document)=>Array.from(p.querySelectorAll(s));
-const VERIFIED_UIDS=["REPLACE_WITH_YOUR_FIREBASE_UID"]; // Use Firebase Auth UID only.
-const RESERVED=["elaborateedu","globalosp","admin","support","official","verified","qapps"];
-const PAGES=[["Home","index.html","Landing page"],["Feed","feed.html","Project posts"],["Profile","profile.html","Creator profile"],["Settings","settings.html","Account settings"],["Patchwork","patchwork.html","Updates"],["Post","post.html","Post viewer"]];
-const DEMO=[{id:"demo1",authorId:"demo",authorName:"qapps",authorHandle:"qapps",platform:"GitHub",text:"Welcome to GlobalOSP v2.",description:"This version adds search, follow, full post pages, safer verified badges, and settings redirects.",projectTitle:"GlobalOSP",projectUrl:"https://github.com/elaborateedu/GlobalOSP",tags:["globalosp","update"],commentsCount:2,repostsCount:1,starsCount:8}];
-const PATCHES=[{title:"v2.1 UI Polish",date:"Current",tags:["ui","auth","forms","scale"],changes:["Styled comment and modal input boxes consistently.","Fixed login/signup footer links so Create account and Log in are blue and correct.","Reduced oversized spacing and typography across the site.","Centered provider login buttons and added Google, GitHub, and Roblox icons.","Made the Roblox provider button black."]},{title:"Full Working Site v2",date:"Previous",tags:["search","follow","post view","verified","settings"],changes:["Homepage graphic now uses the actual GlobalOSP logo.","Header includes all main pages: Explore, Feed, Profile, Settings, Patchwork.","Edit profile now sends you to Settings.","Verified badges are Firebase UID-based, not username-based.","Added follow/unfollow on profiles.","Posts open into post.html full view.","Global search finds pages, posts, and profiles."]},{title:"Full Site Reset",date:"Previous",tags:["full zip","patchwork"],changes:["Rebuilt the project into one replacement ZIP.","Added settings and Patchwork."]}];
-function ready(){return typeof firebase!="undefined"&&firebase.apps&&firebase.apps.length}function esc(x=""){return String(x).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function norm(x){return String(x||"").toLowerCase().replace(/[^a-z0-9_]/g,"").slice(0,24)}function ver(x={}){return VERIFIED_UIDS.includes(x.uid)||VERIFIED_UIDS.includes(x.authorId)}function badge(x={},big=false){return ver(x)?` <span class="verified ${big?"big":""}">✓</span>`:""}
-document.addEventListener("DOMContentLoaded",()=>{nav();authUI();authForms();compose();comments();feed();profile();settings();postDetail();patchwork();search();});
-function nav(){$("#hamb")?.addEventListener("click",()=>$("#mobile")?.classList.toggle("open"))}
-function authUI(){if(!ready())return;auth.onAuthStateChanged(async u=>{let n=$("#navActions");if(!n)return;if(!u){n.innerHTML=`<a href="login.html" class="btn btn-ghost">Log in</a><a href="signup.html" class="btn btn-primary">Sign up</a>`;return}let p=await getUser(u.uid);n.innerHTML=`<a href="profile.html" class="btn btn-ghost">@${esc(p?.username||u.email?.split("@")[0]||"me")}${badge({uid:u.uid})}</a><button class="btn btn-primary" id="logout">Log out</button>`;$("#logout").onclick=async()=>{await auth.signOut();location.href="index.html"}})}
-async function ensureUser(u,username){let ref=db.collection("users").doc(u.uid),s=await ref.get();if(s.exists)return;username=norm(username||u.displayName||u.email?.split("@")[0]||"builder")||("user"+Date.now());await ref.set({name:u.displayName||username,username,handle:username,email:u.email||"",bio:"",location:"",website:"",photoURL:u.photoURL||"",platforms:[],followersCount:0,followingCount:0,postsCount:0,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
-function authForms(){$("#loginForm")?.addEventListener("submit",async e=>{e.preventDefault();try{await auth.signInWithEmailAndPassword($("#email").value.trim(),$("#password").value);location.href="feed.html"}catch(err){alert(err.message)}});$("#signupForm")?.addEventListener("submit",async e=>{e.preventDefault();let username=norm($("#username").value);if(RESERVED.includes(username))return alert("That username is reserved.");try{let c=await auth.createUserWithEmailAndPassword($("#email").value.trim(),$("#password").value);await c.user.updateProfile({displayName:$("#name").value.trim()||username});await ensureUser(c.user,username);location.href="feed.html"}catch(err){alert(err.message)}});$$(".btn-google").forEach(b=>b.onclick=async()=>{try{let p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});let r=await auth.signInWithPopup(p);await ensureUser(r.user);location.href="feed.html"}catch(e){alert(e.message)}});$$(".btn-github").forEach(b=>b.onclick=async()=>{try{let p=new firebase.auth.GithubAuthProvider();let r=await auth.signInWithPopup(p);await ensureUser(r.user,r.additionalUserInfo?.username);location.href="feed.html"}catch(e){alert(e.message)}});$$(".btn-roblox").forEach(b=>b.onclick=()=>alert("Roblox login needs a backend/custom token flow."))}
-async function getUser(uid){if(!ready()||!uid)return null;let s=await db.collection("users").doc(uid).get();return s.exists?{uid,...s.data()}:null}
-function compose(){let i=$("#postInput");i?.addEventListener("input",()=>{$("#count").textContent=`${i.value.length}/500`});$("#postBtn")?.addEventListener("click",async()=>{if(!ready())return alert("Firebase not loaded");let u=auth.currentUser;if(!u)return location.href="login.html";let text=$("#postInput").value.trim(),description=$("#desc").value.trim(),platform=$("#platform").value,title=$("#title").value.trim(),url=$("#url").value.trim(),image=$("#image").value.trim(),tags=$("#tags").value.split(",").map(x=>x.trim()).filter(Boolean).slice(0,8);if(!text&&!url&&!image)return alert("Write something or add a link/image.");if(image&&!/^https?:\/\/.+\.(png|jpe?g|gif|webp|avif)(\?.*)?$/i.test(image))return alert("Image must be a direct image URL.");let p=await getUser(u.uid);await db.collection("posts").add({text,description,platform,projectTitle:title,projectUrl:url,imageURL:image,tags,authorId:u.uid,authorName:p?.name||u.displayName||"Anonymous",authorHandle:p?.username||"user",authorPhoto:p?.photoURL||"",commentsCount:0,repostsCount:0,starsCount:0,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await db.collection("users").doc(u.uid).set({postsCount:firebase.firestore.FieldValue.increment(1)},{merge:true});["postInput","desc","title","url","image","tags"].forEach(id=>$("#"+id).value="");$("#count").textContent="0/500";})}
-function card(id,p){let a=document.createElement("article");a.className="post";let profile=p.authorId!="demo"?`profile.html?uid=${p.authorId}`:"profile.html",detail=id&&!String(id).startsWith("demo")?`post.html?id=${id}`:"#",init=(p.authorName||"U").split(" ").map(x=>x[0]).join("").slice(0,2);a.innerHTML=`<a class="post-avatar" href="${profile}" style="${p.authorPhoto?`background-image:url('${esc(p.authorPhoto)}')`:""}">${p.authorPhoto?"":init}</a><div style="flex:1"><div><a class="post-name" href="${profile}">${esc(p.authorName||"Anonymous")}${badge({authorId:p.authorId})}</a> <span class="muted">@${esc(p.authorHandle||"user")}</span></div><a href="${detail}"><span class="platform">${esc(p.platform||"Other")}</span>${p.text?`<p>${esc(p.text)}</p>`:""}${p.description?`<p class="muted">${esc(p.description)}</p>`:""}${p.imageURL?`<img class="post-img" src="${esc(p.imageURL)}">`:""}</a>${p.projectUrl||p.projectTitle?`<a class="preview" target="_blank" href="${esc(p.projectUrl||"#")}"><b>${esc(p.projectTitle||"Project link")}</b><br><span class="muted">${esc(p.projectUrl||"")}</span></a>`:""}<div>${(p.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div><div class="actions-row"><button data-act="comment">💬 ${p.commentsCount||0}</button><button data-act="repost">↻ ${p.repostsCount||0}</button><button data-act="star">⭐ ${p.starsCount||0}</button></div></div>`;$$("[data-act]",a).forEach(b=>b.onclick=()=>act(id,b.dataset.act,p));return a}
-function feed(){let r=$("#feed");if(!r)return;if(!ready()){DEMO.forEach(p=>r.appendChild(card(p.id,p)));return}db.collection("posts").orderBy("createdAt","desc").limit(50).onSnapshot(s=>{r.innerHTML="";if(s.empty)r.innerHTML='<div class="empty">No posts yet.</div>';s.forEach(d=>r.appendChild(card(d.id,{id:d.id,...d.data()})))})}
-async function act(id,type,p){if(type=="comment")return openComments(id,p);if(!ready()||String(id).startsWith("demo"))return alert("Sign in to use this.");let u=auth.currentUser;if(!u)return location.href="login.html";let col=type=="star"?"stars":"reposts",field=type=="star"?"starsCount":"repostsCount",ar=db.collection("posts").doc(id).collection(col).doc(u.uid),pr=db.collection("posts").doc(id);await db.runTransaction(async tx=>{let s=await tx.get(ar);if(s.exists){tx.delete(ar);tx.update(pr,{[field]:firebase.firestore.FieldValue.increment(-1)})}else{tx.set(ar,{userId:u.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(pr,{[field]:firebase.firestore.FieldValue.increment(1)})}})}
-function comments(){$$(".close").forEach(b=>b.onclick=()=>$("#modal")?.classList.remove("open"));$("#sendComment")?.addEventListener("click",sendComment)}
-function openComments(id,p){let m=$("#modal");if(!m)return;m.dataset.id=id;$("#commentPreview").textContent=p.text||p.description||"Post";$("#commentInput").value="";$("#comments").innerHTML='<div class="empty">Loading...</div>';m.classList.add("open");if(!ready()||String(id).startsWith("demo"))return $("#comments").innerHTML='<div class="empty">Demo comments.</div>';db.collection("posts").doc(id).collection("comments").orderBy("createdAt","asc").onSnapshot(s=>{let c=$("#comments");c.innerHTML="";if(s.empty)c.innerHTML='<div class="empty">No comments.</div>';s.forEach(d=>{let x=d.data();c.innerHTML+=`<div class="comment-item"><b>${esc(x.authorName)}</b><p>${esc(x.text)}</p></div>`})})}
-async function sendComment(){let u=auth.currentUser;if(!u)return location.href="login.html";let id=$("#modal").dataset.id,text=$("#commentInput").value.trim();if(!text)return;let p=await getUser(u.uid);await db.collection("posts").doc(id).collection("comments").add({text,authorId:u.uid,authorName:p?.name||u.displayName||"Anonymous",createdAt:firebase.firestore.FieldValue.serverTimestamp()});await db.collection("posts").doc(id).update({commentsCount:firebase.firestore.FieldValue.increment(1)});$("#commentInput").value=""}
-function postDetail(){let r=$("#postDetail");if(!r)return;let id=new URLSearchParams(location.search).get("id");if(!id)return r.innerHTML='<div class="empty">No post selected.</div>';if(!ready())return r.innerHTML='<div class="empty">Firebase required.</div>';db.collection("posts").doc(id).onSnapshot(d=>{r.innerHTML="";if(!d.exists)return r.innerHTML='<div class="empty">Post not found.</div>';r.appendChild(card(d.id,{id:d.id,...d.data()}))})}
-function profile(){let root=$("#profileRoot");if(!root)return;$("#editProfileBtn")?.addEventListener("click",()=>location.href="settings.html");$("#followBtn")?.addEventListener("click",follow);if(!ready())return;auth.onAuthStateChanged(async u=>{let uid=new URLSearchParams(location.search).get("uid")||u?.uid;if(!uid)return root.innerHTML='<div class="empty">Log in to view your profile.</div>';let p=await getUser(uid);if(!p&&u&&uid==u.uid){await ensureUser(u);p=await getUser(uid)}if(!p)return root.innerHTML='<div class="empty">Profile not found.</div>';renderProfile(p,u);let posts=[];try{let s=await db.collection("posts").where("authorId","==",uid).limit(20).get();posts=s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}let pr=$("#profilePosts");pr.innerHTML=posts.length?"":'<div class="empty">No posts yet.</div>';posts.forEach(x=>pr.appendChild(card(x.id,x)))})}
-function renderProfile(p,u){$("#pname").innerHTML=esc(p.name||"Unnamed")+badge({uid:p.uid},true);$("#phandle").textContent="@"+(p.username||"user");$("#pbio").textContent=p.bio||"No bio yet.";$("#ploc").textContent=p.location?"📍 "+p.location:"📍 No location";$("#pweb").textContent=p.website||"No website";$("#pweb").href=p.website||"#";$("#followers").textContent=p.followersCount||0;$("#following").textContent=p.followingCount||0;$("#postsCount").textContent=p.postsCount||0;let av=$("#pavatar");av.textContent=(p.name||"U").split(" ").map(x=>x[0]).join("").slice(0,2);av.style.backgroundImage=p.photoURL?`url('${esc(p.photoURL)}')`:"";$("#platforms").innerHTML=(p.platforms||[]).length?p.platforms.map(x=>`<a class="tag" target="_blank" href="${esc(x.url)}">${esc(x.name)}</a>`).join(""):'<span class="tag">No platforms</span>';let own=u&&u.uid==p.uid;$("#editProfileBtn").style.display=own?"inline-flex":"none";$("#followBtn").style.display=(!own&&u)?"inline-flex":"none";$("#followBtn").dataset.uid=p.uid}
-async function follow(){let u=auth.currentUser,t=$("#followBtn").dataset.uid;if(!u)return location.href="login.html";let a=db.collection("users").doc(u.uid).collection("following").doc(t),b=db.collection("users").doc(t).collection("followers").doc(u.uid);await db.runTransaction(async tx=>{let s=await tx.get(a);if(s.exists){tx.delete(a);tx.delete(b);tx.update(db.collection("users").doc(u.uid),{followingCount:firebase.firestore.FieldValue.increment(-1)});tx.update(db.collection("users").doc(t),{followersCount:firebase.firestore.FieldValue.increment(-1)})}else{tx.set(a,{uid:t});tx.set(b,{uid:u.uid});tx.update(db.collection("users").doc(u.uid),{followingCount:firebase.firestore.FieldValue.increment(1)});tx.update(db.collection("users").doc(t),{followersCount:firebase.firestore.FieldValue.increment(1)})}});location.reload()}
-function settings(){let root=$("[data-settings]");if(!root)return;$$("[data-tab]").forEach(b=>b.onclick=()=>{$$("[data-tab]").forEach(x=>x.classList.remove("active"));$$("[data-panel]").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(`[data-panel="${b.dataset.tab}"]`).classList.add("active")});if(!ready())return;auth.onAuthStateChanged(async u=>{if(!u)return location.href="login.html";let p=await getUser(u.uid)||{};set("sname",p.name||u.displayName||"");set("suser",p.username||"");set("sbio",p.bio||"");set("sloc",p.location||"");set("sweb",p.website||"");set("sphoto",p.photoURL||"");set("splat",(p.platforms||[]).map(x=>`${x.name}|${x.url}`).join("\n"));set("semail",u.email||"");$("#suser").oninput=async()=>{let r=await usernameOK(norm($("#suser").value),u.uid);$("#ustatus").textContent=r.msg;$("#ustatus").className="username-status "+(r.ok?"good":"bad")};$("#settingsForm").onsubmit=async e=>{e.preventDefault();let username=norm(get("suser")),ok=await usernameOK(username,u.uid);if(!ok.ok)return alert(ok.msg);let data={name:get("sname"),username,handle:username,bio:get("sbio"),location:get("sloc"),website:get("sweb"),photoURL:get("sphoto"),platforms:parsePlatforms(get("splat")),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};await db.collection("users").doc(u.uid).set(data,{merge:true});await u.updateProfile({displayName:data.name,photoURL:data.photoURL});alert("Saved")}})}
-async function usernameOK(username,uid){if(!username)return{ok:false,msg:"Username required."};if(RESERVED.includes(username))return{ok:false,msg:"That username is reserved."};let s=await db.collection("users").where("username","==",username).limit(1).get();if(s.empty)return{ok:true,msg:"Username available."};return s.docs[0].id==uid?{ok:true,msg:"This is your username."}:{ok:false,msg:"Username already taken."}}
-function parsePlatforms(t){return t.split("\n").map(x=>x.trim()).filter(Boolean).map(l=>{let[a,b]=l.split("|").map(x=>x.trim());return{name:a||"Link",url:b||"#"}})}function set(id,v){let e=$("#"+id);if(e)e.value=v}function get(id){return $("#"+id)?.value.trim()||""}
-function patchwork(){let r=$("#patches");if(!r)return;r.innerHTML=PATCHES.map(p=>`<article class="patch"><h2>${esc(p.title)}</h2><p class="muted">${esc(p.date)}</p><p>${p.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</p><ul>${p.changes.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></article>`).join("")}
-function search(){let i=$("#globalSearch"),res=$("#searchResults");if(!i||!res)return;i.oninput=async()=>{let q=i.value.trim().toLowerCase();if(!q){res.classList.remove("open");return}let items=[];PAGES.filter(p=>p.join(" ").toLowerCase().includes(q)).forEach(p=>items.push({t:p[0],u:p[1],d:"Page · "+p[2]}));if(ready()){try{let ps=await db.collection("posts").limit(25).get();ps.forEach(d=>{let p=d.data(),hay=[p.text,p.description,p.projectTitle,p.authorName,p.authorHandle,p.platform,(p.tags||[]).join(" ")].join(" ").toLowerCase();if(hay.includes(q))items.push({t:p.projectTitle||p.text?.slice(0,40)||"Post",u:`post.html?id=${d.id}`,d:`Post · @${p.authorHandle||"user"}`})});let us=await db.collection("users").limit(30).get();us.forEach(d=>{let u=d.data(),hay=[u.name,u.username,u.bio].join(" ").toLowerCase();if(hay.includes(q))items.push({t:u.name||u.username,u:`profile.html?uid=${d.id}`,d:`Profile · @${u.username||"user"}`})})}catch(e){}}res.innerHTML=items.length?items.slice(0,10).map(x=>`<a class="search-item" href="${esc(x.u)}"><strong>${esc(x.t)}</strong><span>${esc(x.d)}</span></a>`).join(""):`<div class="search-item"><strong>No results</strong><span>Try another search.</span></div>`;res.classList.add("open")};document.addEventListener("click",e=>{if(!e.target.closest(".nav-search"))res.classList.remove("open")})}
+const $ = (s, p = document) => p.querySelector(s);
+const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+
+const VERIFIED_UIDS = ["REPLACE_WITH_YOUR_FIREBASE_UID"];
+const RESERVED = ["elaborateedu", "globalosp", "admin", "support", "official", "verified", "qapps"];
+const PAGES = [
+  ["Home", "index.html", "Landing page"],
+  ["Feed", "feed.html", "Project posts"],
+  ["Profile", "profile.html", "Creator profile"],
+  ["Settings", "settings.html", "Account settings"],
+  ["Patchwork", "patchwork.html", "Updates"],
+  ["Post", "post.html", "Post viewer"]
+];
+
+const DEMO = [
+  {
+    id: "demo1",
+    authorId: "demo",
+    authorName: "qapps",
+    authorHandle: "qapps",
+    platform: "GitHub",
+    text: "Welcome to GlobalOSP v3.",
+    description: "This is the clean replacement build with polished auth pages, styled inputs, search, follows, and full post view.",
+    projectTitle: "GlobalOSP",
+    projectUrl: "https://github.com/elaborateedu/GlobalOSP",
+    tags: ["globalosp", "update"],
+    commentsCount: 2,
+    repostsCount: 1,
+    starsCount: 8
+  }
+];
+
+const PATCHES = [
+  {
+    title: "Clean Replacement v3",
+    date: "Current",
+    tags: ["full replacement", "ui polish", "auth", "forms"],
+    changes: [
+      "Rebuilt the whole site cleanly as one replacement ZIP.",
+      "Styled comments, forms, settings inputs, and modal inputs.",
+      "Fixed auth footer links: Create account and Log in are blue and correct.",
+      "Added Google, GitHub, and Roblox icons to auth buttons.",
+      "Made Roblox auth button black.",
+      "Reduced the overall site scale so it no longer feels oversized."
+    ]
+  },
+  {
+    title: "Full Working Site v2",
+    date: "Previous",
+    tags: ["search", "follow", "post view", "verified", "settings"],
+    changes: [
+      "Homepage graphic uses the actual GlobalOSP logo.",
+      "Header includes Explore, Feed, Profile, Settings, and Patchwork.",
+      "Edit profile sends users to Settings.",
+      "Verified badges are Firebase UID-based, not username-based.",
+      "Added follow/unfollow, full post view, and global search."
+    ]
+  }
+];
+
+function ready() {
+  return typeof firebase !== "undefined" && firebase.apps && firebase.apps.length;
+}
+
+function esc(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function norm(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24);
+}
+
+function isVerified(item = {}) {
+  return VERIFIED_UIDS.includes(item.uid) || VERIFIED_UIDS.includes(item.authorId);
+}
+
+function badge(item = {}, big = false) {
+  return isVerified(item) ? ` <span class="verified ${big ? "big" : ""}">✓</span>` : "";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupNav();
+  setupAuthState();
+  setupAuthForms();
+  setupCompose();
+  setupComments();
+  loadFeed();
+  loadPostDetail();
+  loadProfile();
+  setupSettings();
+  loadPatchwork();
+  setupSearch();
+});
+
+function setupNav() {
+  $("#hamb")?.addEventListener("click", () => $("#mobile")?.classList.toggle("open"));
+}
+
+async function getUser(uid) {
+  if (!ready() || !uid) return null;
+  const snap = await db.collection("users").doc(uid).get();
+  return snap.exists ? { uid, ...snap.data() } : null;
+}
+
+async function ensureUser(user, username) {
+  const ref = db.collection("users").doc(user.uid);
+  const snap = await ref.get();
+  if (snap.exists) return;
+
+  username = norm(username || user.displayName || user.email?.split("@")[0] || "builder") || `user${Date.now()}`;
+
+  await ref.set({
+    name: user.displayName || username,
+    username,
+    handle: username,
+    email: user.email || "",
+    bio: "",
+    location: "",
+    website: "",
+    photoURL: user.photoURL || "",
+    platforms: [],
+    followersCount: 0,
+    followingCount: 0,
+    postsCount: 0,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true });
+}
+
+function setupAuthState() {
+  if (!ready()) return;
+
+  auth.onAuthStateChanged(async (user) => {
+    const nav = $("#navActions");
+    if (!nav) return;
+
+    if (!user) {
+      nav.innerHTML = `<a href="login.html" class="btn btn-ghost">Log in</a><a href="signup.html" class="btn btn-primary">Sign up</a>`;
+      return;
+    }
+
+    const profile = await getUser(user.uid);
+    nav.innerHTML = `
+      <a href="profile.html" class="btn btn-ghost">@${esc(profile?.username || user.email?.split("@")[0] || "me")}${badge({ uid: user.uid })}</a>
+      <button class="btn btn-primary" id="logout">Log out</button>
+    `;
+
+    $("#logout").onclick = async () => {
+      await auth.signOut();
+      location.href = "index.html";
+    };
+  });
+}
+
+function setupAuthForms() {
+  $("#loginForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    try {
+      await auth.signInWithEmailAndPassword($("#email").value.trim(), $("#password").value);
+      location.href = "feed.html";
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  $("#signupForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const username = norm($("#username").value);
+
+    if (RESERVED.includes(username)) return alert("That username is reserved.");
+
+    try {
+      const cred = await auth.createUserWithEmailAndPassword($("#email").value.trim(), $("#password").value);
+      await cred.user.updateProfile({ displayName: $("#name").value.trim() || username });
+      await ensureUser(cred.user, username);
+      location.href = "feed.html";
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  $$(".btn-google").forEach((button) => {
+    button.onclick = async () => {
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        const result = await auth.signInWithPopup(provider);
+        await ensureUser(result.user);
+        location.href = "feed.html";
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  });
+
+  $$(".btn-github").forEach((button) => {
+    button.onclick = async () => {
+      try {
+        const provider = new firebase.auth.GithubAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+        await ensureUser(result.user, result.additionalUserInfo?.username);
+        location.href = "feed.html";
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  });
+
+  $$(".btn-roblox").forEach((button) => {
+    button.onclick = () => alert("Roblox login needs a backend/custom token flow.");
+  });
+}
+
+function setupCompose() {
+  const input = $("#postInput");
+  input?.addEventListener("input", () => {
+    $("#count").textContent = `${input.value.length}/500`;
+  });
+
+  $("#postBtn")?.addEventListener("click", async () => {
+    if (!ready()) return alert("Firebase not loaded.");
+
+    const user = auth.currentUser;
+    if (!user) return location.href = "login.html";
+
+    const text = $("#postInput").value.trim();
+    const description = $("#desc").value.trim();
+    const platform = $("#platform").value;
+    const title = $("#title").value.trim();
+    const url = $("#url").value.trim();
+    const image = $("#image").value.trim();
+    const tags = $("#tags").value.split(",").map((x) => x.trim()).filter(Boolean).slice(0, 8);
+
+    if (!text && !url && !image) return alert("Write something or add a link/image.");
+
+    if (image && !/^https?:\/\/.+\.(png|jpe?g|gif|webp|avif)(\?.*)?$/i.test(image)) {
+      return alert("Image must be a direct image URL.");
+    }
+
+    const profile = await getUser(user.uid);
+
+    await db.collection("posts").add({
+      text,
+      description,
+      platform,
+      projectTitle: title,
+      projectUrl: url,
+      imageURL: image,
+      tags,
+      authorId: user.uid,
+      authorName: profile?.name || user.displayName || "Anonymous",
+      authorHandle: profile?.username || "user",
+      authorPhoto: profile?.photoURL || "",
+      commentsCount: 0,
+      repostsCount: 0,
+      starsCount: 0,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await db.collection("users").doc(user.uid).set({
+      postsCount: firebase.firestore.FieldValue.increment(1)
+    }, { merge: true });
+
+    ["postInput", "desc", "title", "url", "image", "tags"].forEach((id) => $("#" + id).value = "");
+    $("#count").textContent = "0/500";
+  });
+}
+
+function buildPostCard(id, post) {
+  const article = document.createElement("article");
+  article.className = "post";
+
+  const profileURL = post.authorId !== "demo" ? `profile.html?uid=${post.authorId}` : "profile.html";
+  const detailURL = id && !String(id).startsWith("demo") ? `post.html?id=${id}` : "#";
+  const initials = (post.authorName || "U").split(" ").map((x) => x[0]).join("").slice(0, 2).toUpperCase();
+
+  article.innerHTML = `
+    <a class="post-avatar" href="${profileURL}" style="${post.authorPhoto ? `background-image:url('${esc(post.authorPhoto)}')` : ""}">${post.authorPhoto ? "" : initials}</a>
+    <div style="flex:1;min-width:0;">
+      <div>
+        <a class="post-name" href="${profileURL}">${esc(post.authorName || "Anonymous")}${badge({ authorId: post.authorId })}</a>
+        <span class="muted">@${esc(post.authorHandle || "user")}</span>
+      </div>
+
+      <a href="${detailURL}">
+        <span class="platform">${esc(post.platform || "Other")}</span>
+        ${post.text ? `<p>${esc(post.text)}</p>` : ""}
+        ${post.description ? `<p class="muted">${esc(post.description)}</p>` : ""}
+        ${post.imageURL ? `<img class="post-img" src="${esc(post.imageURL)}" alt="Post image">` : ""}
+      </a>
+
+      ${post.projectUrl || post.projectTitle ? `
+        <a class="preview" target="_blank" rel="noreferrer" href="${esc(post.projectUrl || "#")}">
+          <b>${esc(post.projectTitle || "Project link")}</b><br>
+          <span class="muted">${esc(post.projectUrl || "")}</span>
+        </a>` : ""}
+
+      <div>${(post.tags || []).map((tag) => `<span class="tag">#${esc(tag)}</span>`).join("")}</div>
+
+      <div class="actions-row">
+        <button data-action="comment">💬 ${post.commentsCount || 0}</button>
+        <button data-action="repost">↻ ${post.repostsCount || 0}</button>
+        <button data-action="star">⭐ ${post.starsCount || 0}</button>
+      </div>
+    </div>
+  `;
+
+  $$("[data-action]", article).forEach((button) => {
+    button.onclick = () => handlePostAction(id, button.dataset.action, post);
+  });
+
+  return article;
+}
+
+function loadFeed() {
+  const root = $("#feed");
+  if (!root) return;
+
+  if (!ready()) {
+    DEMO.forEach((post) => root.appendChild(buildPostCard(post.id, post)));
+    return;
+  }
+
+  db.collection("posts").orderBy("createdAt", "desc").limit(50).onSnapshot((snapshot) => {
+    root.innerHTML = "";
+
+    if (snapshot.empty) {
+      root.innerHTML = `<div class="empty">No posts yet.</div>`;
+      return;
+    }
+
+    snapshot.forEach((doc) => root.appendChild(buildPostCard(doc.id, { id: doc.id, ...doc.data() })));
+  });
+}
+
+async function handlePostAction(id, type, post) {
+  if (type === "comment") return openComments(id, post);
+
+  if (!ready() || String(id).startsWith("demo")) return alert("Sign in to use this.");
+
+  const user = auth.currentUser;
+  if (!user) return location.href = "login.html";
+
+  const collection = type === "star" ? "stars" : "reposts";
+  const field = type === "star" ? "starsCount" : "repostsCount";
+  const actionRef = db.collection("posts").doc(id).collection(collection).doc(user.uid);
+  const postRef = db.collection("posts").doc(id);
+
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(actionRef);
+
+    if (snap.exists) {
+      tx.delete(actionRef);
+      tx.update(postRef, { [field]: firebase.firestore.FieldValue.increment(-1) });
+    } else {
+      tx.set(actionRef, { userId: user.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      tx.update(postRef, { [field]: firebase.firestore.FieldValue.increment(1) });
+    }
+  });
+}
+
+function setupComments() {
+  $$(".close").forEach((button) => button.onclick = () => $("#modal")?.classList.remove("open"));
+  $("#sendComment")?.addEventListener("click", sendComment);
+}
+
+function openComments(id, post) {
+  const modal = $("#modal");
+  if (!modal) return;
+
+  modal.dataset.id = id;
+  $("#commentPreview").textContent = post.text || post.description || "Post";
+  $("#commentInput").value = "";
+  $("#comments").innerHTML = `<div class="empty">Loading...</div>`;
+  modal.classList.add("open");
+
+  if (!ready() || String(id).startsWith("demo")) {
+    $("#comments").innerHTML = `<div class="empty">Demo comments.</div>`;
+    return;
+  }
+
+  db.collection("posts").doc(id).collection("comments").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+    const comments = $("#comments");
+    comments.innerHTML = "";
+
+    if (snapshot.empty) {
+      comments.innerHTML = `<div class="empty">No comments.</div>`;
+      return;
+    }
+
+    snapshot.forEach((doc) => {
+      const comment = doc.data();
+      comments.innerHTML += `<div class="comment-item"><b>${esc(comment.authorName || "Anonymous")}</b><p>${esc(comment.text || "")}</p></div>`;
+    });
+  });
+}
+
+async function sendComment() {
+  const user = auth.currentUser;
+  if (!user) return location.href = "login.html";
+
+  const id = $("#modal").dataset.id;
+  const text = $("#commentInput").value.trim();
+  if (!text) return;
+
+  const profile = await getUser(user.uid);
+
+  await db.collection("posts").doc(id).collection("comments").add({
+    text,
+    authorId: user.uid,
+    authorName: profile?.name || user.displayName || "Anonymous",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  await db.collection("posts").doc(id).update({
+    commentsCount: firebase.firestore.FieldValue.increment(1)
+  });
+
+  $("#commentInput").value = "";
+}
+
+function loadPostDetail() {
+  const root = $("#postDetail");
+  if (!root) return;
+
+  const id = new URLSearchParams(location.search).get("id");
+  if (!id) {
+    root.innerHTML = `<div class="empty">No post selected.</div>`;
+    return;
+  }
+
+  if (!ready()) {
+    root.innerHTML = `<div class="empty">Firebase required.</div>`;
+    return;
+  }
+
+  db.collection("posts").doc(id).onSnapshot((doc) => {
+    root.innerHTML = "";
+
+    if (!doc.exists) {
+      root.innerHTML = `<div class="empty">Post not found.</div>`;
+      return;
+    }
+
+    root.appendChild(buildPostCard(doc.id, { id: doc.id, ...doc.data() }));
+  });
+}
+
+function loadProfile() {
+  const root = $("#profileRoot");
+  if (!root) return;
+
+  $("#editProfileBtn")?.addEventListener("click", () => location.href = "settings.html");
+  $("#followBtn")?.addEventListener("click", followUser);
+
+  if (!ready()) return;
+
+  auth.onAuthStateChanged(async (user) => {
+    let uid = new URLSearchParams(location.search).get("uid") || user?.uid;
+
+    if (!uid) {
+      root.innerHTML = `<div class="empty">Log in to view your profile.</div>`;
+      return;
+    }
+
+    let profile = await getUser(uid);
+
+    if (!profile && user && uid === user.uid) {
+      await ensureUser(user);
+      profile = await getUser(uid);
+    }
+
+    if (!profile) {
+      root.innerHTML = `<div class="empty">Profile not found.</div>`;
+      return;
+    }
+
+    renderProfile(profile, user);
+
+    let posts = [];
+    try {
+      const snapshot = await db.collection("posts").where("authorId", "==", uid).limit(20).get();
+      posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {}
+
+    const postRoot = $("#profilePosts");
+    postRoot.innerHTML = posts.length ? "" : `<div class="empty">No posts yet.</div>`;
+    posts.forEach((post) => postRoot.appendChild(buildPostCard(post.id, post)));
+  });
+}
+
+function renderProfile(profile, user) {
+  $("#pname").innerHTML = `${esc(profile.name || "Unnamed")}${badge({ uid: profile.uid }, true)}`;
+  $("#phandle").textContent = "@" + (profile.username || "user");
+  $("#pbio").textContent = profile.bio || "No bio yet.";
+  $("#ploc").textContent = profile.location ? "📍 " + profile.location : "📍 No location";
+  $("#pweb").textContent = profile.website || "No website";
+  $("#pweb").href = profile.website || "#";
+  $("#followers").textContent = profile.followersCount || 0;
+  $("#following").textContent = profile.followingCount || 0;
+  $("#postsCount").textContent = profile.postsCount || 0;
+
+  const avatar = $("#pavatar");
+  avatar.textContent = (profile.name || "U").split(" ").map((x) => x[0]).join("").slice(0, 2);
+  avatar.style.backgroundImage = profile.photoURL ? `url('${esc(profile.photoURL)}')` : "";
+
+  $("#platforms").innerHTML = (profile.platforms || []).length
+    ? profile.platforms.map((item) => `<a class="tag" target="_blank" rel="noreferrer" href="${esc(item.url)}">${esc(item.name)}</a>`).join("")
+    : `<span class="tag">No platforms</span>`;
+
+  const own = user && user.uid === profile.uid;
+  $("#editProfileBtn").style.display = own ? "inline-flex" : "none";
+  $("#followBtn").style.display = (!own && user) ? "inline-flex" : "none";
+  $("#followBtn").dataset.uid = profile.uid;
+}
+
+async function followUser() {
+  const user = auth.currentUser;
+  const target = $("#followBtn").dataset.uid;
+
+  if (!user) return location.href = "login.html";
+
+  const followingRef = db.collection("users").doc(user.uid).collection("following").doc(target);
+  const followerRef = db.collection("users").doc(target).collection("followers").doc(user.uid);
+
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(followingRef);
+
+    if (snap.exists) {
+      tx.delete(followingRef);
+      tx.delete(followerRef);
+      tx.update(db.collection("users").doc(user.uid), { followingCount: firebase.firestore.FieldValue.increment(-1) });
+      tx.update(db.collection("users").doc(target), { followersCount: firebase.firestore.FieldValue.increment(-1) });
+    } else {
+      tx.set(followingRef, { uid: target });
+      tx.set(followerRef, { uid: user.uid });
+      tx.update(db.collection("users").doc(user.uid), { followingCount: firebase.firestore.FieldValue.increment(1) });
+      tx.update(db.collection("users").doc(target), { followersCount: firebase.firestore.FieldValue.increment(1) });
+    }
+  });
+
+  location.reload();
+}
+
+function setupSettings() {
+  const root = $("[data-settings]");
+  if (!root) return;
+
+  $$("[data-tab]").forEach((button) => {
+    button.onclick = () => {
+      $$("[data-tab]").forEach((item) => item.classList.remove("active"));
+      $$("[data-panel]").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      $(`[data-panel="${button.dataset.tab}"]`).classList.add("active");
+    };
+  });
+
+  if (!ready()) return;
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) return location.href = "login.html";
+
+    const profile = await getUser(user.uid) || {};
+    setValue("sname", profile.name || user.displayName || "");
+    setValue("suser", profile.username || "");
+    setValue("sbio", profile.bio || "");
+    setValue("sloc", profile.location || "");
+    setValue("sweb", profile.website || "");
+    setValue("sphoto", profile.photoURL || "");
+    setValue("splat", (profile.platforms || []).map((item) => `${item.name}|${item.url}`).join("\n"));
+    setValue("semail", user.email || "");
+
+    $("#suser").oninput = async () => {
+      const result = await usernameOK(norm($("#suser").value), user.uid);
+      $("#ustatus").textContent = result.msg;
+      $("#ustatus").className = "username-status " + (result.ok ? "good" : "bad");
+    };
+
+    $("#settingsForm").onsubmit = async (event) => {
+      event.preventDefault();
+
+      const username = norm(getValue("suser"));
+      const check = await usernameOK(username, user.uid);
+
+      if (!check.ok) return alert(check.msg);
+
+      const data = {
+        name: getValue("sname"),
+        username,
+        handle: username,
+        bio: getValue("sbio"),
+        location: getValue("sloc"),
+        website: getValue("sweb"),
+        photoURL: getValue("sphoto"),
+        platforms: parsePlatforms(getValue("splat")),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      await db.collection("users").doc(user.uid).set(data, { merge: true });
+      await user.updateProfile({ displayName: data.name, photoURL: data.photoURL });
+      alert("Saved.");
+    };
+  });
+}
+
+async function usernameOK(username, uid) {
+  if (!username) return { ok: false, msg: "Username required." };
+  if (RESERVED.includes(username)) return { ok: false, msg: "That username is reserved." };
+
+  const snapshot = await db.collection("users").where("username", "==", username).limit(1).get();
+  if (snapshot.empty) return { ok: true, msg: "Username available." };
+
+  return snapshot.docs[0].id === uid
+    ? { ok: true, msg: "This is your username." }
+    : { ok: false, msg: "Username already taken." };
+}
+
+function parsePlatforms(text) {
+  return text.split("\n").map((line) => line.trim()).filter(Boolean).map((line) => {
+    const [name, url] = line.split("|").map((part) => part.trim());
+    return { name: name || "Link", url: url || "#" };
+  });
+}
+
+function setValue(id, value) {
+  const element = $("#" + id);
+  if (element) element.value = value;
+}
+
+function getValue(id) {
+  return $("#" + id)?.value.trim() || "";
+}
+
+function loadPatchwork() {
+  const root = $("#patches");
+  if (!root) return;
+
+  root.innerHTML = PATCHES.map((patch) => `
+    <article class="patch">
+      <h2>${esc(patch.title)}</h2>
+      <p class="muted">${esc(patch.date)}</p>
+      <p>${patch.tags.map((tag) => `<span class="tag">${esc(tag)}</span>`).join("")}</p>
+      <ul>${patch.changes.map((change) => `<li>${esc(change)}</li>`).join("")}</ul>
+    </article>
+  `).join("");
+}
+
+function setupSearch() {
+  const input = $("#globalSearch");
+  const results = $("#searchResults");
+  if (!input || !results) return;
+
+  input.oninput = async () => {
+    const query = input.value.trim().toLowerCase();
+
+    if (!query) {
+      results.classList.remove("open");
+      return;
+    }
+
+    const items = [];
+    PAGES.filter((page) => page.join(" ").toLowerCase().includes(query)).forEach((page) => {
+      items.push({ title: page[0], url: page[1], desc: "Page · " + page[2] });
+    });
+
+    if (ready()) {
+      try {
+        const posts = await db.collection("posts").limit(25).get();
+        posts.forEach((doc) => {
+          const post = doc.data();
+          const haystack = [post.text, post.description, post.projectTitle, post.authorName, post.authorHandle, post.platform, (post.tags || []).join(" ")].join(" ").toLowerCase();
+
+          if (haystack.includes(query)) {
+            items.push({
+              title: post.projectTitle || post.text?.slice(0, 40) || "Post",
+              url: `post.html?id=${doc.id}`,
+              desc: `Post · @${post.authorHandle || "user"}`
+            });
+          }
+        });
+
+        const users = await db.collection("users").limit(30).get();
+        users.forEach((doc) => {
+          const user = doc.data();
+          const haystack = [user.name, user.username, user.bio].join(" ").toLowerCase();
+
+          if (haystack.includes(query)) {
+            items.push({
+              title: user.name || user.username,
+              url: `profile.html?uid=${doc.id}`,
+              desc: `Profile · @${user.username || "user"}`
+            });
+          }
+        });
+      } catch (error) {}
+    }
+
+    results.innerHTML = items.length
+      ? items.slice(0, 10).map((item) => `<a class="search-item" href="${esc(item.url)}"><strong>${esc(item.title)}</strong><span>${esc(item.desc)}</span></a>`).join("")
+      : `<div class="search-item"><strong>No results</strong><span>Try another search.</span></div>`;
+
+    results.classList.add("open");
+  };
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".nav-search")) results.classList.remove("open");
+  });
+}

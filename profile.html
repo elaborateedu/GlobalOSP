@@ -1,1 +1,86 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Profile — GlobalOSP</title><link rel="icon" href="assets/logo-icon.svg"><link rel="stylesheet" href="css/style.css"></head><body class=""><nav class="navbar"><div class="nav-inner"><a class="nav-logo" href="index.html"><img src="assets/logo-icon.svg">GlobalOSP</a><div class="nav-links"><a class="nav-link " href="index.html">Explore</a><a class="nav-link " href="feed.html">Feed</a><a class="nav-link active" href="profile.html">Profile</a><a class="nav-link " href="settings.html">Settings</a><a class="nav-link " href="patchwork.html">Patchwork</a></div><div class="nav-search"><input id="globalSearch" placeholder="Search GlobalOSP..."><div id="searchResults" class="search-results"></div></div><div id="navActions" class="nav-actions"><a class="btn btn-ghost" href="login.html">Log in</a><a class="btn btn-primary" href="signup.html">Sign up</a></div><button id="hamb" class="hamburger">☰</button></div><div id="mobile" class="mobile-menu"><a href="index.html">Explore</a><a href="feed.html">Feed</a><a href="profile.html">Profile</a><a href="settings.html">Settings</a><a href="patchwork.html">Patchwork</a><a href="login.html">Log in</a><a href="signup.html">Sign up</a></div></nav><main class="profile-shell"><section class="cover"></section><section id="profileRoot" class="profile-wrap"><article class="profile-card"><div class="profile-row"><div><div id="pavatar" class="profile-avatar">GO</div><h1 id="pname">Loading...</h1><p class="muted" id="phandle">@loading</p></div><div class="profile-actions"><button id="editProfileBtn" class="btn btn-outline">Edit profile</button><button id="followBtn" class="btn btn-primary" style="display:none">Follow</button></div></div><p id="pbio">Loading...</p><div class="stats"><span id="ploc">📍 Internet</span><a id="pweb" href="#" target="_blank">No website</a></div><div class="stats"><span><b id="postsCount">0</b> posts</span><span><b id="followers">0</b> followers</span><span><b id="following">0</b> following</span></div><div id="platforms" class="platforms"></div></article><h2>Posts</h2><section id="profilePosts" class="post-list"></section></section></main><div id="modal" class="modal"><div class="modal-card"><button class="close">×</button><div id="commentPreview" class="preview"></div><div id="comments"></div><textarea id="commentInput" class="form-input" placeholder="Write a comment..."></textarea><br><button id="sendComment" class="btn btn-primary btn-full">Comment</button></div></div><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script><script src="js/firebase-config.js"></script><script src="js/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile — GlobalOSP</title>
+  <meta name="description" content="GlobalOSP is a social platform for sharing projects from any platform.">
+  <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="">
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html"><img src="assets/logo-icon.svg" alt="GlobalOSP">GlobalOSP</a>
+    <div class="nav-links"><a class="nav-link " href="index.html">Explore</a><a class="nav-link " href="feed.html">Feed</a><a class="nav-link active" href="profile.html">Profile</a><a class="nav-link " href="settings.html">Settings</a><a class="nav-link " href="patchwork.html">Patchwork</a></div>
+    <div class="nav-search">
+      <input id="globalSearch" placeholder="Search GlobalOSP...">
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <div id="navActions" class="nav-actions">
+      <a class="btn btn-ghost" href="login.html">Log in</a>
+      <a class="btn btn-primary" href="signup.html">Sign up</a>
+    </div>
+    <button id="hamb" class="hamburger">☰</button>
+  </div>
+  <div id="mobile" class="mobile-menu">
+    <a href="index.html">Explore</a><a href="feed.html">Feed</a><a href="profile.html">Profile</a><a href="settings.html">Settings</a><a href="patchwork.html">Patchwork</a>
+    <a href="login.html">Log in</a>
+    <a href="signup.html">Sign up</a>
+  </div>
+</nav>
+<main class="profile-shell">
+  <section class="cover"></section>
+
+  <section id="profileRoot" class="profile-wrap">
+    <article class="profile-card">
+      <div class="profile-row">
+        <div>
+          <div id="pavatar" class="profile-avatar">GO</div>
+          <h1 id="pname">Loading...</h1>
+          <p class="muted" id="phandle">@loading</p>
+        </div>
+        <div class="profile-actions">
+          <button id="editProfileBtn" class="btn btn-outline">Edit profile</button>
+          <button id="followBtn" class="btn btn-primary" style="display:none">Follow</button>
+        </div>
+      </div>
+
+      <p id="pbio">Loading...</p>
+
+      <div class="stats">
+        <span id="ploc">📍 Internet</span>
+        <a id="pweb" href="#" target="_blank">No website</a>
+      </div>
+
+      <div class="stats">
+        <span><b id="postsCount">0</b> posts</span>
+        <span><b id="followers">0</b> followers</span>
+        <span><b id="following">0</b> following</span>
+      </div>
+
+      <div id="platforms" class="platforms"></div>
+    </article>
+
+    <h2>Posts</h2>
+    <section id="profilePosts" class="post-list"></section>
+  </section>
+</main>
+
+<div id="modal" class="modal">
+  <div class="modal-card">
+    <button class="close">×</button>
+    <div id="commentPreview" class="preview"></div>
+    <div id="comments"></div>
+    <textarea id="commentInput" placeholder="Write a comment..."></textarea>
+    <br><br>
+    <button id="sendComment" class="btn btn-primary btn-full">Comment</button>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

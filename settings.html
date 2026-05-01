@@ -1,1 +1,100 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Settings — GlobalOSP</title><link rel="icon" href="assets/logo-icon.svg"><link rel="stylesheet" href="css/style.css"></head><body class=""><nav class="navbar"><div class="nav-inner"><a class="nav-logo" href="index.html"><img src="assets/logo-icon.svg">GlobalOSP</a><div class="nav-links"><a class="nav-link " href="index.html">Explore</a><a class="nav-link " href="feed.html">Feed</a><a class="nav-link " href="profile.html">Profile</a><a class="nav-link active" href="settings.html">Settings</a><a class="nav-link " href="patchwork.html">Patchwork</a></div><div class="nav-search"><input id="globalSearch" placeholder="Search GlobalOSP..."><div id="searchResults" class="search-results"></div></div><div id="navActions" class="nav-actions"><a class="btn btn-ghost" href="login.html">Log in</a><a class="btn btn-primary" href="signup.html">Sign up</a></div><button id="hamb" class="hamburger">☰</button></div><div id="mobile" class="mobile-menu"><a href="index.html">Explore</a><a href="feed.html">Feed</a><a href="profile.html">Profile</a><a href="settings.html">Settings</a><a href="patchwork.html">Patchwork</a><a href="login.html">Log in</a><a href="signup.html">Sign up</a></div></nav><main class="settings-shell" data-settings><div class="settings"><aside class="settings-nav"><button class="active" data-tab="profile">Profile</button><button data-tab="account">Account</button><button data-tab="privacy">Privacy</button></aside><section><form id="settingsForm" class="panel active" data-panel="profile"><h1>Settings</h1><p class="muted">Verified badges are UID-based, not name-based.</p><div class="settings-grid"><div><label>Name</label><input id="sname"></div><div><label>Username</label><input id="suser"><p id="ustatus" class="username-status">Usernames must be unique.</p></div><div class="full"><label>Bio</label><textarea id="sbio"></textarea></div><div><label>Location</label><input id="sloc"></div><div><label>Website</label><input id="sweb"></div><div class="full"><label>Photo URL</label><input id="sphoto"></div><div class="full"><label>Platforms</label><textarea id="splat" placeholder="GitHub|https://github.com/you"></textarea></div></div><br><button class="btn btn-primary">Save settings</button></form><section class="panel" data-panel="account"><h2>Account</h2><label>Email</label><input id="semail" disabled></section><section class="panel" data-panel="privacy"><h2>Privacy</h2><p class="muted">More privacy controls coming later.</p></section></section></div></main><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script><script src="js/firebase-config.js"></script><script src="js/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings — GlobalOSP</title>
+  <meta name="description" content="GlobalOSP is a social platform for sharing projects from any platform.">
+  <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="">
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html"><img src="assets/logo-icon.svg" alt="GlobalOSP">GlobalOSP</a>
+    <div class="nav-links"><a class="nav-link " href="index.html">Explore</a><a class="nav-link " href="feed.html">Feed</a><a class="nav-link " href="profile.html">Profile</a><a class="nav-link active" href="settings.html">Settings</a><a class="nav-link " href="patchwork.html">Patchwork</a></div>
+    <div class="nav-search">
+      <input id="globalSearch" placeholder="Search GlobalOSP...">
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <div id="navActions" class="nav-actions">
+      <a class="btn btn-ghost" href="login.html">Log in</a>
+      <a class="btn btn-primary" href="signup.html">Sign up</a>
+    </div>
+    <button id="hamb" class="hamburger">☰</button>
+  </div>
+  <div id="mobile" class="mobile-menu">
+    <a href="index.html">Explore</a><a href="feed.html">Feed</a><a href="profile.html">Profile</a><a href="settings.html">Settings</a><a href="patchwork.html">Patchwork</a>
+    <a href="login.html">Log in</a>
+    <a href="signup.html">Sign up</a>
+  </div>
+</nav>
+<main class="settings-shell" data-settings>
+  <div class="settings">
+    <aside class="settings-nav">
+      <button class="active" data-tab="profile">Profile</button>
+      <button data-tab="account">Account</button>
+      <button data-tab="privacy">Privacy</button>
+    </aside>
+
+    <section>
+      <form id="settingsForm" class="panel active" data-panel="profile">
+        <h1>Settings</h1>
+        <p class="muted">Verified badges are UID-based, not name-based.</p>
+
+        <div class="settings-grid">
+          <div>
+            <label>Name</label>
+            <input id="sname">
+          </div>
+          <div>
+            <label>Username</label>
+            <input id="suser">
+            <p id="ustatus" class="username-status">Usernames must be unique.</p>
+          </div>
+          <div class="full">
+            <label>Bio</label>
+            <textarea id="sbio"></textarea>
+          </div>
+          <div>
+            <label>Location</label>
+            <input id="sloc">
+          </div>
+          <div>
+            <label>Website</label>
+            <input id="sweb">
+          </div>
+          <div class="full">
+            <label>Photo URL</label>
+            <input id="sphoto">
+          </div>
+          <div class="full">
+            <label>Platforms</label>
+            <textarea id="splat" placeholder="GitHub|https://github.com/you"></textarea>
+          </div>
+        </div>
+
+        <br>
+        <button class="btn btn-primary">Save settings</button>
+      </form>
+
+      <section class="panel" data-panel="account">
+        <h2>Account</h2>
+        <label>Email</label>
+        <input id="semail" disabled>
+      </section>
+
+      <section class="panel" data-panel="privacy">
+        <h2>Privacy</h2>
+        <p class="muted">More privacy controls coming later.</p>
+      </section>
+    </section>
+  </div>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
