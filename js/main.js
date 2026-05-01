@@ -579,6 +579,12 @@ async function loadProfilePage() {
   const profileRoot = $("#profileRoot");
   if (!profileRoot) return;
 
+  const loadingHTML = `
+    <div class="profile-card-main">
+      <div class="empty-state">Loading profile…</div>
+    </div>
+  `;
+
   if (!isFirebaseReady()) {
     renderProfile({
       uid: "demo",
@@ -595,72 +601,142 @@ async function loadProfilePage() {
     return;
   }
 
+  profileRoot.dataset.loading = "true";
+
   auth.onAuthStateChanged(async (currentUser) => {
-    const params = new URLSearchParams(window.location.search);
-    const uid = params.get("uid") || currentUser?.uid;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const uid = params.get("uid") || currentUser?.uid;
 
-    if (!uid) {
-      profileRoot.innerHTML = `<div class="empty-state">Log in to view your profile.</div>`;
-      return;
+      if (!uid) {
+        profileRoot.innerHTML = `
+          <div class="profile-card-main">
+            <div class="empty-state">
+              Log in to view and edit your profile.
+              <br><br>
+              <a class="btn btn-primary" href="login.html">Log in</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const profileSnap = await db.collection("users").doc(uid).get();
+
+      if (!profileSnap.exists) {
+        profileRoot.innerHTML = `
+          <div class="profile-card-main">
+            <div class="empty-state">
+              Profile not found. If you just signed in with GitHub, refresh once or create a post so your profile can be created.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      let posts = [];
+      try {
+        // No orderBy here, so it will not get stuck waiting for a Firestore composite index.
+        const postSnap = await db.collection("posts")
+          .where("authorId", "==", uid)
+          .limit(20)
+          .get();
+
+        posts = postSnap.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => {
+            const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+            const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+            return bd - ad;
+          });
+      } catch (postError) {
+        console.warn("Could not load profile posts:", postError);
+        posts = [];
+      }
+
+      const profile = { uid, ...profileSnap.data() };
+      renderProfile(profile, posts, currentUser);
+    } catch (error) {
+      console.error("Profile load failed:", error);
+      profileRoot.innerHTML = `
+        <div class="profile-card-main">
+          <div class="empty-state">
+            Could not load profile. Check your Firebase rules and console errors.
+            <br><br>
+            ${escapeHtml(cleanFirebaseError(error))}
+          </div>
+        </div>
+      `;
     }
-
-    const profileSnap = await db.collection("users").doc(uid).get();
-    if (!profileSnap.exists) {
-      profileRoot.innerHTML = `<div class="empty-state">Profile not found.</div>`;
-      return;
-    }
-
-    const postSnap = await db.collection("posts")
-      .where("authorId", "==", uid)
-      .orderBy("createdAt", "desc")
-      .limit(20)
-      .get();
-
-    const profile = { uid, ...profileSnap.data() };
-    const posts = postSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    renderProfile(profile, posts, currentUser);
   });
 }
 
 function renderProfile(profile, posts = [], currentUser = null) {
-  $("#profileDisplayName").textContent = profile.name || "Unnamed Builder";
-  $("#profileHandle").textContent = `@${profile.username || profile.handle || "builder"}`;
-  $("#profileBioText").textContent = profile.bio || "No bio yet.";
-  $("#profileLocationText").textContent = profile.location || "No location";
-  $("#profileWebsiteLink").textContent = profile.website || "No website";
-  $("#profileWebsiteLink").href = profile.website || "#";
-  $("#followersCount").textContent = profile.followersCount || 0;
-  $("#followingCount").textContent = profile.followingCount || 0;
-  $("#postsCount").textContent = profile.postsCount || posts.length || 0;
+  const setText = (id, value) => {
+    const el = $(`#${id}`);
+    if (el) el.textContent = value;
+  };
+
+  const setValue = (id, value) => {
+    const el = $(`#${id}`);
+    if (el) el.value = value;
+  };
+
+  setText("profileDisplayName", profile.name || "Unnamed Builder");
+  setText("profileHandle", `@${profile.username || profile.handle || "builder"}`);
+  setText("profileBioText", profile.bio || "No bio yet.");
+  setText("profileLocationText", profile.location || "No location");
+  setText("followersCount", profile.followersCount || 0);
+  setText("followingCount", profile.followingCount || 0);
+  setText("postsCount", profile.postsCount || posts.length || 0);
+
+  const websiteLink = $("#profileWebsiteLink");
+  if (websiteLink) {
+    websiteLink.textContent = profile.website || "No website";
+    websiteLink.href = profile.website || "#";
+  }
 
   const avatar = $("#profileAvatar");
-  avatar.textContent = getInitials(profile.name || profile.username || "U");
-  avatar.style.backgroundImage = profile.photoURL ? `url('${escapeAttr(profile.photoURL)}')` : "";
+  if (avatar) {
+    avatar.textContent = getInitials(profile.name || profile.username || "U");
+    avatar.style.backgroundImage = profile.photoURL ? `url('${escapeAttr(profile.photoURL)}')` : "";
+  }
 
   const platformWrap = $("#profilePlatformsWrap");
-  platformWrap.innerHTML = (profile.platforms || []).length
-    ? profile.platforms.map((p) => `<a class="tag" href="${escapeAttr(p.url)}" target="_blank" rel="noreferrer">${escapeHtml(p.name)}</a>`).join("")
-    : `<span class="tag">No connected platforms</span>`;
+  if (platformWrap) {
+    platformWrap.innerHTML = (profile.platforms || []).length
+      ? profile.platforms.map((p) => `<a class="tag" href="${escapeAttr(p.url)}" target="_blank" rel="noreferrer">${escapeHtml(p.name)}</a>`).join("")
+      : `<span class="tag">No connected platforms</span>`;
+  }
 
   const isOwnProfile = currentUser && currentUser.uid === profile.uid;
-  $("#editProfileBtn").style.display = isOwnProfile ? "inline-flex" : "none";
-  $("#followBtn").style.display = !isOwnProfile && currentUser ? "inline-flex" : "none";
-  $("#followBtn").dataset.uid = profile.uid;
+
+  const editBtn = $("#editProfileBtn");
+  if (editBtn) editBtn.style.display = isOwnProfile ? "inline-flex" : "none";
+
+  const followBtn = $("#followBtn");
+  if (followBtn) {
+    followBtn.style.display = !isOwnProfile && currentUser ? "inline-flex" : "none";
+    followBtn.dataset.uid = profile.uid || "";
+  }
 
   if (isOwnProfile) {
-    $("#profileName").value = profile.name || "";
-    $("#profileBio").value = profile.bio || "";
-    $("#profileWebsite").value = profile.website || "";
-    $("#profileLocation").value = profile.location || "";
-    $("#profilePlatforms").value = (profile.platforms || []).map((p) => `${p.name}|${p.url}`).join("\n");
+    setValue("profileName", profile.name || "");
+    setValue("profileBio", profile.bio || "");
+    setValue("profileWebsite", profile.website || "");
+    setValue("profileLocation", profile.location || "");
+    setValue("profilePlatforms", (profile.platforms || []).map((p) => `${p.name}|${p.url}`).join("\n"));
   }
 
   const postsWrap = $("#profilePosts");
+  if (!postsWrap) return;
+
   postsWrap.innerHTML = "";
   if (!posts.length) {
     postsWrap.innerHTML = `<div class="empty-state">No posts yet.</div>`;
     return;
   }
+
   posts.forEach((post) => postsWrap.appendChild(buildPostCard(post.id || "demo", post)));
 }
 

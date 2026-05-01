@@ -1335,3 +1335,115 @@ button {
     flex-direction: column;
   }
 }
+
+
+/* === Profile/layout hotfix === */
+
+.btn.btn-primary,
+.btn-primary {
+  background: var(--black);
+  color: var(--white);
+  border: 1.5px solid var(--black);
+}
+
+.btn.btn-ghost,
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-600);
+  border: 1.5px solid transparent;
+}
+
+.btn.btn-ghost:hover,
+.btn-ghost:hover {
+  color: var(--black);
+  background: var(--gray-100);
+}
+
+.profile-shell {
+  width: 100%;
+  padding-top: var(--nav-h);
+  background: var(--white);
+}
+
+.profile-cover {
+  width: 100%;
+}
+
+.profile-root {
+  width: min(900px, calc(100% - 32px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profile-card-main {
+  width: 100%;
+}
+
+.profile-posts {
+  width: min(650px, 100%);
+}
+
+.profile-editor textarea.form-input {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.profile-editor select.form-input,
+.profile-editor textarea.form-input,
+.profile-editor input.form-input,
+.auth-card select,
+.compose-select,
+.compose-field {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #fff;
+  color: var(--black);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+}
+
+.profile-editor textarea.form-input,
+.form-input textarea {
+  font-family: var(--font-body);
+}
+
+.form-input,
+.compose-field,
+.compose-select,
+textarea.form-input {
+  line-height: 1.4;
+}
+
+select.form-input,
+.compose-select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--gray-600) 50%),
+    linear-gradient(135deg, var(--gray-600) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2.2rem;
+}
+
+#profileRoot .empty-state {
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .profile-root {
+    width: min(100% - 20px, 900px);
+    margin-top: -42px;
+  }
+
+  .profile-card-main {
+    padding: 1rem;
+  }
+
+  .profile-avatar {
+    width: 78px;
+    height: 78px;
+    margin-top: -46px;
+  }
+}
