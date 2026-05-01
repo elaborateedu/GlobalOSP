@@ -1,72 +1,25 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return signedIn() && request.auth.uid == userId;
-    }
-
-    function validPostCreate() {
-      return signedIn()
-        && request.resource.data.authorId == request.auth.uid
-        && request.resource.data.text is string
-        && request.resource.data.text.size() <= 500
-        && request.resource.data.platform is string;
-    }
-
+    function signedIn() { return request.auth != null; }
+    function isOwner(userId) { return signedIn() && request.auth.uid == userId; }
     match /users/{userId} {
       allow read: if true;
       allow create, update: if isOwner(userId);
       allow delete: if false;
-
-      match /followers/{followerId} {
-        allow read: if true;
-        allow create, delete: if signedIn();
-      }
-
-      match /following/{followingId} {
-        allow read: if true;
-        allow create, delete: if isOwner(userId);
-      }
+      match /followers/{followerId} { allow read: if true; allow create, delete: if signedIn(); }
+      match /following/{followingId} { allow read: if true; allow create, delete: if isOwner(userId); }
     }
-
-    match /usernames/{username} {
-      allow read: if true;
-      allow create: if signedIn() || request.auth == null;
-      allow update: if signedIn();
-      allow delete: if false;
-    }
-
     match /posts/{postId} {
       allow read: if true;
-      allow create: if validPostCreate();
-      allow update: if signedIn() && (
-        resource.data.authorId == request.auth.uid
-        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starsCount', 'repostsCount', 'commentsCount'])
-      );
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update: if signedIn();
       allow delete: if signedIn() && resource.data.authorId == request.auth.uid;
-
-      match /stars/{userId} {
-        allow read: if true;
-        allow create, delete: if isOwner(userId);
-      }
-
-      match /reposts/{userId} {
-        allow read: if true;
-        allow create, delete: if isOwner(userId);
-      }
-
+      match /stars/{userId} { allow read: if true; allow create, delete: if isOwner(userId); }
+      match /reposts/{userId} { allow read: if true; allow create, delete: if isOwner(userId); }
       match /comments/{commentId} {
         allow read: if true;
-        allow create: if signedIn()
-          && request.resource.data.authorId == request.auth.uid
-          && request.resource.data.text is string
-          && request.resource.data.text.size() <= 500;
+        allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
         allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
       }
     }
