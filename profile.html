@@ -1,17 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Profile — GlobalOSP</title>
-  <meta name="description" content="GlobalOSP is a social platform for sharing projects from GitHub, Replit, Roblox Studio, Scratch, GitLab, and any URL." />
+  <meta name="description" content="Your GlobalOSP builder profile." />
+
   <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Existing site CSS first -->
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Profile-specific fix CSS last so it wins -->
+  <link rel="stylesheet" href="css/profile.css" />
 </head>
-<body>
+
+<body class="profile-page">
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
       <a href="index.html" class="nav-logo">
@@ -20,12 +29,12 @@
       </a>
 
       <div class="nav-links">
-        <a class="nav-link " href="index.html">Explore</a>
-<a class="nav-link " href="feed.html">Feed</a>
-<a class="nav-link active" href="profile.html">Profile</a>
+        <a class="nav-link" href="index.html">Explore</a>
+        <a class="nav-link" href="feed.html">Feed</a>
+        <a class="nav-link active" href="profile.html">Profile</a>
       </div>
 
-      <div class="nav-actions">
+      <div class="nav-actions" id="navActions">
         <a href="login.html" class="btn btn-ghost">Log in</a>
         <a href="signup.html" class="btn btn-primary">Sign up</a>
       </div>
@@ -37,103 +46,112 @@
 
     <div class="mobile-menu" id="mobileMenu">
       <a href="index.html">Explore</a>
-<a href="feed.html">Feed</a>
-<a href="profile.html">Profile</a>
-<a href="login.html">Log in</a>
-<a href="signup.html">Sign up free →</a>
+      <a href="feed.html">Feed</a>
+      <a href="profile.html">Profile</a>
+      <a href="login.html">Log in</a>
+      <a href="signup.html">Sign up</a>
     </div>
   </nav>
-  <main class="profile-shell">
-    <div class="profile-cover"></div>
 
-    <section class="profile-root" id="profileRoot">
-      <div class="profile-card-main">
-        <div class="profile-top">
-          <div>
+  <main class="profile-shell">
+    <section class="profile-cover"></section>
+
+    <section class="profile-container" id="profileRoot">
+      <article class="profile-card">
+        <div class="profile-top-row">
+          <div class="profile-main-info">
             <div class="profile-avatar" id="profileAvatar">GO</div>
-            <h1 class="profile-name" id="profileDisplayName">Loading...</h1>
+            <h1 id="profileDisplayName">Loading profile...</h1>
             <p class="profile-handle" id="profileHandle">@loading</p>
           </div>
 
           <div class="profile-actions">
-            <button class="btn btn-outline" id="editProfileBtn" style="display:none;">Edit profile</button>
-            <button class="btn btn-primary" id="followBtn" style="display:none;">Follow</button>
+            <button class="btn btn-outline" id="editProfileBtn" type="button">Edit profile</button>
+            <button class="btn btn-primary hidden" id="followBtn" type="button">Follow</button>
           </div>
         </div>
 
-        <p class="profile-bio" id="profileBioText">Loading profile...</p>
+        <p class="profile-bio" id="profileBioText">Loading...</p>
 
         <div class="profile-meta">
-          <span class="profile-meta-item">📍 <span id="profileLocationText">Loading</span></span>
-          <a class="profile-meta-item" id="profileWebsiteLink" href="#" target="_blank" rel="noreferrer">Loading</a>
+          <span id="profileLocationText">📍 Internet</span>
+          <a id="profileWebsiteLink" href="#" target="_blank" rel="noreferrer">No website</a>
         </div>
 
         <div class="profile-stats">
-          <span class="stat-item"><span class="stat-count" id="postsCount">0</span> posts</span>
-          <span class="stat-item"><span class="stat-count" id="followersCount">0</span> followers</span>
-          <span class="stat-item"><span class="stat-count" id="followingCount">0</span> following</span>
+          <span><strong id="postsCount">0</strong> posts</span>
+          <span><strong id="followersCount">0</strong> followers</span>
+          <span><strong id="followingCount">0</strong> following</span>
         </div>
 
-        <div class="profile-platforms" id="profilePlatformsWrap"></div>
+        <div class="profile-platforms" id="profilePlatformsWrap">
+          <span class="tag">Loading platforms...</span>
+        </div>
 
-        <div class="profile-editor" id="profileEditor">
-          <form id="profileForm">
-            <div class="profile-form-grid">
-              <div class="form-group">
-                <label class="form-label" for="profileName">Display name</label>
-                <input class="form-input" id="profileName" />
-              </div>
+        <form class="profile-editor" id="profileForm">
+          <h2>Edit profile</h2>
 
-              <div class="form-group">
-                <label class="form-label" for="profileLocation">Location</label>
-                <input class="form-input" id="profileLocation" placeholder="Internet" />
-              </div>
-
-              <div class="form-group full">
-                <label class="form-label" for="profileBio">Bio</label>
-                <textarea class="form-input" id="profileBio" placeholder="What do you build?"></textarea>
-              </div>
-
-              <div class="form-group full">
-                <label class="form-label" for="profileWebsite">Website</label>
-                <input class="form-input" id="profileWebsite" placeholder="https://..." />
-              </div>
-
-              <div class="form-group full">
-                <label class="form-label" for="profilePlatforms">Connected platforms</label>
-                <textarea class="form-input" id="profilePlatforms" placeholder="GitHub|https://github.com/you&#10;Roblox|https://www.roblox.com/users/..."></textarea>
-              </div>
+          <div class="profile-form-grid">
+            <div class="form-group">
+              <label for="profileName">Display name</label>
+              <input id="profileName" class="form-input" placeholder="Your name" />
             </div>
 
-            <button class="btn btn-primary" type="submit">Save profile</button>
-          </form>
-        </div>
-      </div>
+            <div class="form-group">
+              <label for="profileLocation">Location</label>
+              <input id="profileLocation" class="form-input" placeholder="Internet" />
+            </div>
+
+            <div class="form-group full">
+              <label for="profileBio">Bio</label>
+              <textarea id="profileBio" class="form-input" placeholder="What do you build?"></textarea>
+            </div>
+
+            <div class="form-group full">
+              <label for="profileWebsite">Website</label>
+              <input id="profileWebsite" class="form-input" placeholder="https://..." />
+            </div>
+
+            <div class="form-group full">
+              <label for="profilePlatforms">Connected platforms</label>
+              <textarea id="profilePlatforms" class="form-input" placeholder="GitHub|https://github.com/you&#10;Roblox|https://www.roblox.com/users/..."></textarea>
+              <small>Format: Platform name|URL. Put each platform on its own line.</small>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Save profile</button>
+        </form>
+      </article>
 
       <h2 class="profile-section-title">Posts</h2>
-      <div class="profile-posts" id="profilePosts"></div>
+      <section class="profile-posts" id="profilePosts">
+        <div class="empty-state">Loading posts...</div>
+      </section>
     </section>
   </main>
 
-  <div class="modal" id="commentModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Comments</h3>
-        <button class="modal-close">×</button>
+  <section class="comment-modal" id="commentModal" aria-hidden="true">
+    <div class="comment-modal-card">
+      <div class="comment-modal-header">
+        <h2>Comments</h2>
+        <button type="button" id="commentClose">×</button>
       </div>
+
       <div class="comment-preview" id="commentPostPreview"></div>
       <div id="commentsList"></div>
-      <div class="form-group">
-        <label class="form-label" for="commentInput">Add a comment</label>
-        <textarea id="commentInput" class="form-input" placeholder="Write a reply..."></textarea>
-      </div>
-      <button class="btn btn-primary btn-full" id="commentSubmit">Comment</button>
+
+      <label for="commentInput">Add a comment</label>
+      <textarea id="commentInput" class="form-input" placeholder="Write a reply..."></textarea>
+      <button class="btn btn-primary" id="commentSubmit" type="button">Comment</button>
     </div>
-  </div>
+  </section>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/profile.js"></script>
 </body>
 </html>
