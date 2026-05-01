@@ -1,0 +1,207 @@
+/* GlobalOSP Locked Social Fix
+   Load after all other CSS.
+*/
+
+/* Verified */
+.verified-badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: #0f62fe;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+
+.verified-badge.large {
+  width: 22px;
+  height: 22px;
+  font-size: 13px;
+}
+
+/* Nav patch */
+.nav-link.patchwork-link,
+.sidebar-link.patchwork-link {
+  position: relative;
+}
+
+/* Profile editor patch */
+#profileForm.profile-editor,
+.profile-editor {
+  display: none;
+}
+
+#profileForm.profile-editor.open,
+.profile-editor.open,
+#profileEditor.open {
+  display: block !important;
+}
+
+#profileForm {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid #eee;
+}
+
+#profileForm .profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+#profileForm .full {
+  grid-column: 1 / -1;
+}
+
+#profileForm label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+
+#profileForm input,
+#profileForm textarea {
+  width: 100%;
+  border: 1.5px solid #dedede;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font: inherit;
+  outline: none;
+  background: #fff;
+  color: #090909;
+}
+
+#profileForm textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+#profileForm input:focus,
+#profileForm textarea:focus {
+  border-color: #0f62fe;
+  box-shadow: 0 0 0 3px rgba(15,98,254,.12);
+}
+
+/* Patchwork page */
+.patchwork-shell {
+  padding: calc(var(--nav-h, 64px) + 56px) 1.5rem 5rem;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(15,98,254,.10), transparent 28%),
+    #fafafa;
+}
+
+.patchwork-container {
+  width: min(980px, 100%);
+  margin: 0 auto;
+}
+
+.patchwork-hero {
+  margin-bottom: 34px;
+}
+
+.patchwork-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e8f1ff;
+  color: #0f62fe;
+  border: 1px solid #bcd7ff;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.patchwork-hero h1 {
+  font-family: var(--font-display, system-ui);
+  font-size: clamp(2.6rem, 7vw, 5.4rem);
+  line-height: .95;
+  letter-spacing: -.065em;
+}
+
+.patchwork-hero p {
+  color: #666;
+  max-width: 680px;
+  margin-top: 16px;
+  font-size: 1.05rem;
+}
+
+.patchwork-list {
+  display: grid;
+  gap: 16px;
+}
+
+.patch-card {
+  background: #fff;
+  border: 1px solid #e9e9e9;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 12px 38px rgba(0,0,0,.045);
+}
+
+.patch-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.patch-card h2 {
+  font-family: var(--font-display, system-ui);
+  letter-spacing: -.04em;
+  font-size: 1.45rem;
+}
+
+.patch-date {
+  font-family: var(--font-mono, monospace);
+  color: #777;
+  font-size: .8rem;
+  white-space: nowrap;
+}
+
+.patch-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.patch-tag {
+  background: #f1f1f1;
+  color: #555;
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.patch-card ul {
+  padding-left: 18px;
+  color: #555;
+}
+
+.patch-card li {
+  margin: 6px 0;
+}
+
+@media (max-width: 700px) {
+  #profileForm .profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .patch-card-head {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Patchwork — GlobalOSP</title>
+  <meta name="description" content="GlobalOSP updates, patches, and changelog." />
+
+  <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/globalosp-fix.css" />
+</head>
+
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo-icon.svg" alt="GlobalOSP" class="nav-logo-icon" />
+        <span>GlobalOSP</span>
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">Explore</a>
+        <a class="nav-link" href="feed.html">Feed</a>
+        <a class="nav-link" href="profile.html">Profile</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+        <a class="nav-link active" href="patchwork.html">Patchwork</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Log in</a>
+        <a href="signup.html" class="btn btn-primary">Sign up</a>
+      </div>
+
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html">Explore</a>
+      <a href="feed.html">Feed</a>
+      <a href="profile.html">Profile</a>
+      <a href="settings.html">Settings</a>
+      <a href="patchwork.html">Patchwork</a>
+    </div>
+  </nav>
+
+  <main class="patchwork-shell">
+    <div class="patchwork-container">
+      <header class="patchwork-hero">
+        <div class="patchwork-kicker">✦ GlobalOSP updates</div>
+        <h1>Patchwork</h1>
+        <p>This page tracks major GlobalOSP fixes, experiments, polish, and new features. Every time the site changes, add an update here.</p>
+      </header>
+
+      <section class="patchwork-list" id="patchworkList"></section>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/globalosp-fix.js"></script>
+  <script src="js/patchwork.js"></script>
+</body>
+</html>
